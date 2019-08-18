@@ -1,7 +1,7 @@
-## Rest API for the BreachCompilation Collection
+## REST API for the leaked BreachCompilation credentials
 
 **BreachCompilation** includes billion clear text credentials discovered in a single database
-(file size: ~42GB)<br>
+(file size: ~42GB). The aim of this repo is to create a REST API interface similar to the [ghostproject](https://ghostproject.fr/)<br>
 
 - [BreachCompilation structure and usage]()
 - [Download BreachCompilation via transmission software]()
@@ -37,7 +37,7 @@ BreachCompilation/
     splitter.sh
 </code></pre>
 
-each file includes email adresses and passwords(email and password are seperated with `:`) starting with specific letter. Example entry in folder
+each file includes email adresses and passwords(email and password are seperated with `:`) starting with a specific letter. Example entry in folder
 **a/** and file **b**. 
 <pre><code>
 AB-HK@hotmail.com:apple1
@@ -51,7 +51,7 @@ you can obtain this large dataset with this **magnet link**
 magnet:?xt=urn:btih:7ffbcd8cee06aba2ce6561688cf68ce2addca0a3&dn=BreachCompilation&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fglotorrents.pw%3A6969&tr=udp%3A%2F%2Ftracker.opentrackr.org%3A1337
 </code></pre>
 
-install transmission software collection
+but first install transmission software collection
 <pre><code>
 sudo apt-get install transmission-cli  transmission-common transmission-daemon
 </code></pre>
@@ -105,7 +105,7 @@ finally insert the magnet link in the url field
 </div>
 
 
-### Create database for the BreachCompilation Collection
+### Create a database for the BreachCompilation credentials
 
 install PostgreSQL dependencies via apt
 
@@ -113,3 +113,9 @@ install PostgreSQL dependencies via apt
 sudo apt-get install postgresql libpq-dev postgresql-client postgresql-client-common
 </code></pre>
 
+Follow this [tutorial](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04) to set up a 
+postgresql environment. For graphical visualization install [pgAdmin4](https://www.pgadmin.org/download/).
+<br>
+
+Use the script [breachcompilation_to_postgresql.py](BreachCompilationRestAPI/scripts/breachcompilation_to_postgresql.py) 
+to create subsequent database structure

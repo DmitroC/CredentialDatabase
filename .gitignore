@@ -105,5 +105,4 @@ venv.bak/
 
 #project
 .idea/
-BreachCompilationRestAPI/BreachCompilation/
-
+BreachCompilation/
