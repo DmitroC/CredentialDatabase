@@ -1,20 +1,14 @@
+#!/usr/bin/python3
+
 import os
 import argparse
 import psycopg2
 from string import ascii_lowercase
-from time import sleep
-
-host = "192.168.178.37"
-port = "5432"
-user = "christian"
-password = ""
-dbname = "hacking"
-breach_compilation_path = "/home/christian/projects/hacking-toolchain/BreachCompilationRestAPI/BreachCompilation"
 
 counter = 1
 
 
-def connect_db():
+def connect_db(host, port, user, password, dbname):
     print("connecting to database")
     global db_conn
     global cursor
@@ -50,21 +44,34 @@ def create_table():
 def insert_data_in_db(data):
     global counter
     first_char_email = list(data[1])[0]
-    # TODO check symbols
-    try:
-        query_str = "insert into breach_compilation.\"{}\"(id, email, password, username, provider) VALUES (%s, %s, %s, %s, %s)".format(first_char_email)
+    chars = set('0123456789abcdefghijklmnopqrstuvwxyz')
 
-        cursor.execute(query_str, data)
-        db_conn.commit()
-        counter += 1
-    except Exception as e:
-        db_conn.commit()
+    if first_char_email in chars:
+        try:
+            query_str = "insert into breach_compilation.\"{}\"(id, email, password, username, provider) VALUES (%s, %s, %s, %s, %s)".format(first_char_email)
+
+            cursor.execute(query_str, data)
+            db_conn.commit()
+            counter += 1
+        except Exception as e:
+            db_conn.commit()
+    else:
+        # handle symbols
+        try:
+            query_str = "insert into breach_compilation.symbols(id, email, password, username, provider) VALUES (%s, %s, %s, %s, %s)".format(first_char_email)
+
+            cursor.execute(query_str, data)
+            db_conn.commit()
+            counter += 1
+        except Exception as e:
+            db_conn.commit()
 
 
 def iterate_data_dir(breach_compilation_path):
 
     # check if path includes data directory
     if 'data' not in os.listdir(breach_compilation_path):
+        print("no 'data' directory in given BreachCompilation path")
         return
     # change to data path within breach compilation collection
     breach_compilation_path_data = os.path.join(breach_compilation_path, 'data')
@@ -131,12 +138,29 @@ def handle_credentials(email, password):
 
 
 def main():
-    print("start")
+    print("start script breachcompilation_to_postgresql.py")
 
-    connect_db()
-    create_table()
-    #insert_data(cursor, db_conn, (0, "hans.meier@web.de", "test1234", "hans.meier", "web.de"))
-    iterate_data_dir(breach_compilation_path)
+    # arguments
+    parser = argparse.ArgumentParser(description="script to insert BreachCompilation credentials into postgresql database")
+    parser.add_argument('--host', type=str, help='')
+    parser.add_argument('--port', type=str, help='')
+    parser.add_argument('--user', type=str, help='')
+    parser.add_argument('--password', type=str, help='')
+    parser.add_argument('--dbname', type=str, help='')
+    parser.add_argument('--path', type=str, help='')
+
+    args = parser.parse_args()
+
+    if (args.host and args.port and args.user and args.password and args.dbname and args.path) is None:
+        print("Please specify all arguments")
+        exit(1)
+    else:
+        # connecting to database
+        connect_db(args.host, args.port, args.user, args.password, args.dbname)
+        # check and create schema as well as all tables in database
+        create_table()
+        # iterate through the data directory structure and extract all credentials from each file
+        iterate_data_dir(args.path)
 
 
 if __name__ == '__main__':

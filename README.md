@@ -8,6 +8,8 @@
 - [Create database for the BreachCompilation Collection]()
 - [REST API for BreachCompilation]()
 
+<br>
+
 ### BreachCompilation structure and usage
 <pre><code>
 BreachCompilation/
@@ -43,6 +45,7 @@ each file includes email adresses and passwords(email and password are seperated
 AB-HK@hotmail.com:apple1
 </code></pre>
 
+<br>
 
 ### Download BreachCompilation via transmission software
 
@@ -104,6 +107,7 @@ finally insert the magnet link in the url field
   <img src="res/transmission_enter_magnet_url.png" alt="example" width="900" height="115">
 </div>
 
+<br>
 
 ### Create a database for the BreachCompilation credentials
 
@@ -119,3 +123,4 @@ postgresql environment. For graphical visualization install [pgAdmin4](https://w
 
 Use the script [breachcompilation_to_postgresql.py](BreachCompilationRestAPI/scripts/breachcompilation_to_postgresql.py) 
 to create subsequent database structure
+
