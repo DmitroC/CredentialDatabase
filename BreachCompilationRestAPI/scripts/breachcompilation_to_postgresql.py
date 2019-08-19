@@ -1,11 +1,45 @@
 #!/usr/bin/python3
 
 import os
+import logging
+from logging.handlers import RotatingFileHandler
 import argparse
 import psycopg2
 from string import ascii_lowercase
 
+# set up logger
+trace_logger = logging.getLogger('trace_logger')
+trace_logger.setLevel(logging.INFO)
+error_logger = logging.getLogger('error_logger')
+error_logger.setLevel(logging.WARNING)
 counter = 1
+
+
+def formate_logger():
+
+    # log directory
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    log_dir = os.path.join(current_dir, 'logs')
+    if not os.path.exists(log_dir):
+        os.mkdir(log_dir)
+
+    # formatter and handler
+    formatter = logging.Formatter('%(asctime)s - %(lineno)d@%(filename)s - %(levelname)s: %(message)s')
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(formatter)
+    trace_rotate_handler = RotatingFileHandler(log_dir + '/trace.log', mode='a', maxBytes=30000000)
+    trace_rotate_handler.setFormatter(formatter)
+    trace_rotate_handler.setLevel(logging.INFO)
+
+    error_rotate_handler = RotatingFileHandler(log_dir + '/insert_fail.log', mode='a', maxBytes=30000000)
+    error_rotate_handler.setFormatter(formatter)
+    error_rotate_handler.setLevel(logging.WARNING)
+
+    # add handler
+    trace_logger.addHandler(stream_handler)
+    trace_logger.addHandler(trace_rotate_handler)
+    error_logger.addHandler(stream_handler)
+    error_logger.addHandler(error_rotate_handler)
 
 
 def connect_db(host, port, user, password, dbname):
@@ -14,10 +48,11 @@ def connect_db(host, port, user, password, dbname):
     global cursor
     db_conn = psycopg2.connect(host=host, port=port, user=user, password=password, dbname=dbname)
     cursor = db_conn.cursor()
+    trace_logger.info("connecting to postgresql database")
 
 
 def create_table():
-    print("create schema/table for breach compilation credentials")
+    trace_logger.info("create schema/table for breach compilation credentials")
 
     query_schema = "create schema if not exists breach_compilation;"
     cursor.execute(query_schema)
@@ -25,18 +60,19 @@ def create_table():
 
     # tables for numbers
     for i in range(10):
-        query_table = "create table if not exists breach_compilation.\"{}\" (id bigint, email text primary key, password text, username text, provider text);".format(i)
+        #query_table = "create table if not exists breach_compilation.\"{}\" (id bigint, email text primary key, password text, username text, provider text);".format(i)
+        query_table = "create table if not exists breach_compilation.\"{}\" (id bigint, email text, password text, username text, provider text);".format(i)
         cursor.execute(query_table)
         db_conn.commit()
 
     # tables for letters
     for c in ascii_lowercase:
-        query_table = "create table if not exists breach_compilation.\"{}\" (id bigint, email text primary key, password text, username text, provider text);".format(c)
+        query_table = "create table if not exists breach_compilation.\"{}\" (id bigint, email text, password text, username text, provider text);".format(c)
         cursor.execute(query_table)
         db_conn.commit()
 
     # table for symbols
-    query_table = "create table if not exists breach_compilation.symbols (id bigint, email text primary key, password text, username text, provider text);".format(c)
+    query_table = "create table if not exists breach_compilation.symbols (id bigint, email text, password text, username text, provider text);"
     cursor.execute(query_table)
     db_conn.commit()
 
@@ -53,7 +89,11 @@ def insert_data_in_db(data):
             cursor.execute(query_str, data)
             db_conn.commit()
             counter += 1
+            if (data[0] % 1000) == 0:
+                trace_logger.info("inserted: " + str(data))
         except Exception as e:
+            # save data which are not inserted
+            error_logger.error(str(data))
             db_conn.commit()
     else:
         # handle symbols
@@ -63,7 +103,11 @@ def insert_data_in_db(data):
             cursor.execute(query_str, data)
             db_conn.commit()
             counter += 1
+            if (counter % 1000) == 0:
+                trace_logger.info("inserted: " + str(data))
         except Exception as e:
+            # save data which are not inserted
+            error_logger.error(str(data))
             db_conn.commit()
 
 
@@ -72,6 +116,7 @@ def iterate_data_dir(breach_compilation_path):
     # check if path includes data directory
     if 'data' not in os.listdir(breach_compilation_path):
         print("no 'data' directory in given BreachCompilation path")
+        trace_logger.info("no 'data' directory in given BreachCompilation path")
         return
     # change to data path within breach compilation collection
     breach_compilation_path_data = os.path.join(breach_compilation_path, 'data')
@@ -108,6 +153,7 @@ def iterate_data_dir(breach_compilation_path):
 def extract_data_file(file_path):
 
     with open(file_path, mode='rb') as file:
+        trace_logger.info("extract data from file " + str(file_path))
         # read all lines
         lines = file.readlines()
         try:
@@ -116,13 +162,16 @@ def extract_data_file(file_path):
 
                 if len(cred_list) == 2:
                     handle_credentials(cred_list[0], cred_list[1])
-
+                else:
+                    error_logger.error("cred_list: " + str(cred_list))
         except UnicodeDecodeError as e:
             for line in lines:
                 cred_list = line.decode('latin-1').rstrip('\n').split(':')
 
                 if len(cred_list) == 2:
                     handle_credentials(cred_list[0], cred_list[1])
+                else:
+                    error_logger.error("cred_list: " + str(cred_list))
 
 
 def handle_credentials(email, password):
@@ -133,8 +182,11 @@ def handle_credentials(email, password):
         username = divide_email[0]
         provider = divide_email[1]
         data = (counter, str(email), str(password), str(username), str(provider))
-        print(data)
+        if (counter % 50000) == 0:
+            print(data)
         insert_data_in_db(data=data)
+    else:
+        error_logger.error("divide_email: " + str(divide_email))
 
 
 def main():
@@ -150,6 +202,8 @@ def main():
     parser.add_argument('--path', type=str, help='')
 
     args = parser.parse_args()
+
+    formate_logger()
 
     if (args.host and args.port and args.user and args.password and args.dbname and args.path) is None:
         print("Please specify all arguments")
