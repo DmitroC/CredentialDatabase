@@ -226,7 +226,7 @@ def splitter(cred_list):
 
 
 def main():
-    print("start script BreachCompilationDatabase.py")
+    print("start script BreachCompilationDatabase_old")
 
     # arguments
     parser = argparse.ArgumentParser(description="script to insert BreachCompilation credentials into postgresql database")
