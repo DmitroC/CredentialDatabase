@@ -264,7 +264,7 @@ def insert_data_in_db(email, password, username, provider, sha1, sha256, sha512,
 
 
 def main():
-    print("start script BreachCompilationDatabase_old")
+    print("start script BreachCompilationDatabase")
 
     # arguments
     parser = argparse.ArgumentParser(description="script to insert BreachCompilation credentials into postgresql database")

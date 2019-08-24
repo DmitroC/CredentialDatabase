@@ -124,3 +124,7 @@ postgresql environment. For graphical visualization install [pgAdmin4](https://w
 Use the script [breachcompilation_to_postgresql.py](BreachCompilationDatabase/BreachCompilationDatabase) 
 to create subsequent database structure
 
+- execute script in background 
+<pre><code>
+nohup ./BreachCompilationDatabase --host localhost --port 5432 --user christian --password test1234 --schema breachcompilation --path /home/christian/BreachCompilation &>/dev/null &
+</code></pre>
