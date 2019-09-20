@@ -20,13 +20,14 @@ setup(
     license=__license__,
     author=__author__,
     author_email=__email__,
-    url="",
+    url="https://github.com/bierschi/BreachCompilationRestAPI",
     packages=find_packages(),
     data_files=[
-        'requirements.txt', 'LICENSE', 'CHANGELOG.rst'
+        ('/etc/systemd/system', ['service/BreachCompilationApp.service'])
     ],
+    package_data={'BreachCompilationRestAPI': ['config/*']},
     install_requires=required,
-    keywords=[],
+    keywords=["BreachCompilation", "credentials", "leaked", "REST API"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
@@ -49,8 +50,8 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-
+            'BreachCompilationApp = BreachCompilationRestAPI.app:main'
         ],
     },
-    zip_safe=True,
+    zip_safe=False,
 )

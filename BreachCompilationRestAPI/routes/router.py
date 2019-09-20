@@ -2,7 +2,7 @@ from flask import Flask
 
 
 class Router:
-    """ class Router
+    """ class Router to add multiple endpoints to the flask application
 
     USAGE:
             routes = Router(name="TestApp")
@@ -23,13 +23,12 @@ class Router:
         self.app.run(port=port, debug=debug)
 
     def add_endpoint(self, endpoint=None, endpoint_name=None, method=None, handler=None):
-        """ adds a endpoint to the application
+        """ adds an endpoint to the application
 
         :param endpoint: specific endpoint for the app
         :param endpoint_name: endpoint name for the app
         :param method: method for handler call (POST, PUT, DELETE, GET)
         :param handler: handler function/method to execute
-        :return:
         """
         if method == "POST":
             self.app.add_url_rule(endpoint, endpoint_name, handler, methods=["POST"])

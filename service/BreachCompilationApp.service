@@ -1,0 +1,16 @@
+[Unit]
+Description=BreachCompilationRestAPI application
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/BreachCompilationApp
+#WorkingDirectory=/var/lib/
+Restart=always
+User=christian
+Group=christian
+UMask=002
+
+[Install]
+WantedBy=multi-user.target
