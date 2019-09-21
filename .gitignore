@@ -106,5 +106,5 @@ venv.bak/
 #project
 .idea/
 BreachCompilation/
-BreachCompilationRestAPI/config/
+BreachCompilationRestAPI/config/cfg.ini
 rpmbuild/

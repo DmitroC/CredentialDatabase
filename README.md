@@ -3,12 +3,70 @@
 **BreachCompilation** includes billion clear text credentials discovered in a single database
 (file size: ~42GB). The aim of this repo is to create a REST API interface similar to the [ghostproject](https://ghostproject.fr/)<br>
 
+- [Application BreachCompilationRestAPI]()
 - [BreachCompilation structure and usage]()
 - [Download BreachCompilation via transmission software]()
 - [Create database for the BreachCompilation Collection]()
-- [REST API for BreachCompilation]()
 
 <br>
+
+## Installation
+installation from source
+
+<pre><code>
+sudo python3 setup.py release install
+</code></pre>
+
+execute command line script
+<pre><code>
+BreachCompilationApp
+</code></pre>
+
+or use the systemd service file
+<pre><code>
+sudo systemctl status BreachCompilationApp.service
+</code></pre>
+
+<br>
+<hr>
+<br>
+
+or build a rpm file to deploy it on a server
+<pre><code>
+sudo apt install rpm alien
+</code></pre>
+
+create a release rpm package with setup.py
+<pre><code>
+sudo python3 setup.py release bdist_rpm
+</code></pre>
+
+change into folder `dist`
+<pre><code>
+sudo alien -i BreachCompilationRestAPI-1.0.0-1.noarch.rpm
+</code></pre>
+
+copy the rpm file to target server and install the rpm package with the alien tool  
+<pre><code>
+sudo alien -i BreachCompilationRestAPI-1.0.0-1.noarch.rpm
+</code></pre>
+
+or create first a debian package and install with `dpkg -i`
+<pre><code>
+sudo alien BreachCompilationRestAPI-1.0.0-1.noarch.rpm
+sudo dpkg -i breachcompilationrestapi_1.0.0-2_all.deb
+</code></pre>
+
+execute command line script
+<pre><code>
+BreachCompilationApp
+</code></pre>
+
+or use the systemd service file
+<pre><code>
+sudo systemctl status BreachCompilationApp.service
+</code></pre>
+
 
 ### BreachCompilation structure and usage
 <pre><code>
@@ -128,3 +186,20 @@ to create subsequent database structure
 <pre><code>
 nohup ./BreachCompilationDatabase --host localhost --port 5432 --user christian --password test1234 --schema breachcompilation --path /home/christian/BreachCompilation &>/dev/null &
 </code></pre>
+
+
+## index only scan to increase query perfomance
+
+create an index only scan
+<pre><code>
+CREATE index idx_pass_email on test."d"(email, password);
+</code></pre>
+
+vacuum the table, so that the visibility map to be up-to-date
+<pre><code>
+VACUUM test."d";
+</code></pre>
+
+http://wiki.postgresql.org/wiki/Tuning_Your_PostgreSQL_Server
+
+

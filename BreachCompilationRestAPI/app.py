@@ -1,31 +1,42 @@
 #!/usr/bin/python3
 
+import argparse
+from configparser import ConfigParser
+
 from BreachCompilationRestAPI.routes.router import Router
 from BreachCompilationRestAPI.routes.api_handler import APIHandler
-from configparser import ConfigParser
 from BreachCompilationRestAPI import ROOT_DIR
 
+# load config file
 config = ConfigParser()
 config.read(ROOT_DIR + '/config/cfg.ini')
 
 
 class BreachCompilationRestAPI:
+    """ class BreachCompilationRestAPI to define the API and endpoint structure of this application
 
+    USAGE:
+            app = BreachCompilationRestAPI(name="BreachCompilationRestAPI", host=host, port=port, username=username,
+                                           password=password, dbname=dbname)
+
+            app.run()
+    """
     def __init__(self, name, host, port, username, password, dbname):
         self.name = name
 
+        # defines the api handler methods
         self.api = APIHandler(host, port, username, password, dbname)
 
+        # router instance for specific endpoints
         self.router = Router(name=self.name)
         self.router.add_endpoint('/', 'index', method="GET", handler=self.api.index)
         self.router.add_endpoint('/api/passwords/', 'passwords', method="GET", handler=self.api.get_passwords)
 
     def run(self, port=None, debug=None):
-        """
+        """ runs the BreachCompilationRestAPI application on given port
 
-        :param port:
-        :param debug:
-        :return:
+        :param port: port for the webserver
+        :param debug: debug mode true or false
         """
 
         self.router.run(port=port, debug=debug)
@@ -44,7 +55,7 @@ def main():
     app = BreachCompilationRestAPI(name="BreachCompilationRestAPI", host=host, port=port, username=username,
                                    password=password, dbname=dbname)
     # run the app
-    app.run()
+    app.run(port=5000, debug=False)
 
 
 if __name__ == '__main__':
