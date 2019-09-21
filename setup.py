@@ -16,7 +16,6 @@ setup(
     version=__version__,
     description="Rest API for the BreachCompilation collection",
     long_description=readme + "\n\n" + changelog,
-    long_description_content_type='text/markdown',
     license=__license__,
     author=__author__,
     author_email=__email__,

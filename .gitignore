@@ -107,3 +107,4 @@ venv.bak/
 .idea/
 BreachCompilation/
 BreachCompilationRestAPI/config/
+rpmbuild/
