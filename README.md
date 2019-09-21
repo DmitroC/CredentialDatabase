@@ -3,11 +3,13 @@
 **BreachCompilation** includes billion clear text credentials discovered in a single database
 (file size: ~42GB). The aim of this repo is to create a REST API interface similar to the [ghostproject](https://ghostproject.fr/)<br>
 
-- [Application BreachCompilationRestAPI]()
-- [BreachCompilation structure and usage]()
-- [Download BreachCompilation via transmission software]()
-- [Create database for the BreachCompilation Collection]()
+- [Application BreachCompilationRestAPI](https://github.com/bierschi/BreachCompilationRestAPI#installation)
+- [BreachCompilation structure and usage](https://github.com/bierschi/BreachCompilationRestAPI#breachcompilation-structure-and-usage)
+- [Download BreachCompilation via transmission software](https://github.com/bierschi/BreachCompilationRestAPI#download-breachcompilation-via-transmission-software)
+- [Database settings for the BreachCompilation credentials](https://github.com/bierschi/BreachCompilationRestAPI#database-settings-for-the-breachcompilation-credentials)
 
+<br>
+<hr>
 <br>
 
 ## Installation
@@ -27,9 +29,7 @@ or use the systemd service file
 sudo systemctl status BreachCompilationApp.service
 </code></pre>
 
-<br>
 <hr>
-<br>
 
 or build a rpm file to deploy it on a server
 <pre><code>
@@ -67,6 +67,9 @@ or use the systemd service file
 sudo systemctl status BreachCompilationApp.service
 </code></pre>
 
+<br>
+<hr>
+<br>
 
 ### BreachCompilation structure and usage
 <pre><code>
@@ -103,6 +106,8 @@ each file includes email adresses and passwords(email and password are seperated
 AB-HK@hotmail.com:apple1
 </code></pre>
 
+<br>
+<hr>
 <br>
 
 ### Download BreachCompilation via transmission software
@@ -166,8 +171,10 @@ finally insert the magnet link in the url field
 </div>
 
 <br>
+<hr>
+<br>
 
-### Create a database for the BreachCompilation credentials
+### Database settings for the BreachCompilation credentials
 
 install PostgreSQL dependencies via apt
 
@@ -179,8 +186,9 @@ Follow this [tutorial](https://www.digitalocean.com/community/tutorials/how-to-i
 postgresql environment. For graphical visualization install [pgAdmin4](https://www.pgadmin.org/download/).
 <br>
 
-Use the script [breachcompilation_to_postgresql.py](BreachCompilationDatabase/BreachCompilationDatabase) 
-to create subsequent database structure
+Use the the script [BreachCompilationDatabase](BreachCompilationDatabase/BreachCompilationDatabase) 
+to create the necessary database structure
+
 
 - execute script in background 
 <pre><code>
@@ -188,7 +196,7 @@ nohup ./BreachCompilationDatabase --host localhost --port 5432 --user christian 
 </code></pre>
 
 
-## index only scan to increase query perfomance
+#### index only scan to increase query perfomance
 
 create an index only scan
 <pre><code>

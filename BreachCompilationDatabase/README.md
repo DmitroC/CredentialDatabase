@@ -9,7 +9,7 @@ nohup ./BreachCompilationDatabase --host localhost --port 5432 --user christian 
 </code></pre>
 
 ## Database structure
-creates for each number/letter (0-9,a-z) a table in defined schema <br>
+creates for each number/letter (0-9,a-z) a table in defined schema (--schema argument) <br>
 
 elements in database: 
 - id
