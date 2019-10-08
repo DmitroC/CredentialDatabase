@@ -59,7 +59,7 @@ def formate_logger():
 
 
 def db_conn_pool(host, port, user, password, dbname):
-    print("connecting to database")
+    trace_logger.info("connecting to database")
     global threaded_postgresql_pool
     threaded_postgresql_pool = psycopg2.pool.ThreadedConnectionPool(10, 40, user=user, password=password,
                                                                     host=host, port=port, database=dbname)
@@ -224,7 +224,7 @@ def insert_data_in_db(email, password, username, provider, sha1, sha256, sha512,
             counter[first_char_email] += 1
             if (data[0] % 1000) == 0:
                 trace_logger.info("inserted: " + str(data))
-            #threaded_postgresql_pool.putconn(char_conn)
+
         except psycopg2.errors.UniqueViolation as e:
             counter[first_char_email] += 1
             insertfail_logger.error(e)
@@ -233,7 +233,6 @@ def insert_data_in_db(email, password, username, provider, sha1, sha256, sha512,
             # save data which are not inserted
             insertfail_logger.error(e)
             char_conn.commit()
-            #threaded_postgresql_pool.putconn(char_conn)
 
     else:
         # handle symbols
@@ -249,7 +248,6 @@ def insert_data_in_db(email, password, username, provider, sha1, sha256, sha512,
             counter_sym += 1
             if (counter_sym % 1000) == 0:
                 trace_logger.info("inserted: " + str(data))
-            #threaded_postgresql_pool.putconn(sym_conn)
 
         except psycopg2.errors.UniqueViolation as e:
             counter[first_char_email] += 1
@@ -260,7 +258,6 @@ def insert_data_in_db(email, password, username, provider, sha1, sha256, sha512,
             insertfail_logger.error(e)
             insertfail_logger.error(str(data))
             sym_conn.commit()
-            #threaded_postgresql_pool.putconn(sym_conn)
 
 
 def main():
@@ -277,14 +274,15 @@ def main():
 
     args = parser.parse_args()
 
-    formate_logger()
-
     if (args.host and args.port and args.user and args.password and args.dbname and args.schema and args.path) is None:
         print("Wrong number of arguments. Use it like: ./BreachCompilationDatabase --host 192.168.1.2 --port 5432 --user "
               "john --password test1234 --dbname postgres --schema credentials --path /path/to/BreachCompilation/data")
         exit(1)
     else:
         print("start script BreachCompilationDatabase")
+
+        # create loggers
+        formate_logger()
 
         # connecting to database pool
         db_conn_pool(args.host, args.port, args.user, args.password, args.dbname)
