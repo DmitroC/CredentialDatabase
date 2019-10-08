@@ -4,7 +4,7 @@ import argparse
 from configparser import ConfigParser
 
 from BreachCompilationRestAPI.routes.router import Router
-from BreachCompilationRestAPI.routes.api_handler import APIHandler
+from BreachCompilationRestAPI.api import APIHandler
 from BreachCompilationRestAPI import ROOT_DIR
 
 # load config file
@@ -44,19 +44,48 @@ class BreachCompilationRestAPI:
 
 
 def main():
+    # arguments
 
-    # load config settings
-    host     = config.get('database', 'host')
-    port     = config.getint('database', 'port')
-    username = config.get('database', 'username')
-    password = config.get('database', 'password')
-    dbname   = config.get('database', 'dbname')
+    parser = argparse.ArgumentParser(description="arguments for BreachCompilationApp")
+    parser.add_argument('--host', type=str, help='hostname to connect to the database')
+    parser.add_argument('--port', type=str, help='port to connect to the database')
+    parser.add_argument('--user', type=str, help='user of the database')
+    parser.add_argument('--password', type=str, help='password from user')
+    parser.add_argument('--dbname', type=str, help='database name')
+    parser.add_argument('--app-host', type=str, help='hostname for the application')
+    parser.add_argument('--app-port', type=str, help='port for the application')
+    args = parser.parse_args()
+
+    if (args.host and args.port and args.user and args.password and args.dbname) is None:
+        print("load settings from config file")
+        # load config settings
+        host     = config.get('database', 'host')
+        port     = config.getint('database', 'port')
+        username = config.get('database', 'username')
+        password = config.get('database', 'password')
+        dbname   = config.get('database', 'dbname')
+    else:
+        host     = args.host
+        port     = args.port
+        username = args.user
+        password = args.password
+        dbname   = args.dbname
+
+    if args.app_host is None:
+        app_host = '0.0.0.0'
+    else:
+        app_host = args.app_host
+
+    if args.app_port is None:
+        app_port = 5000
+    else:
+        app_port = args.app_port
 
     # initialize BreachCompilationRestAPI app
     app = BreachCompilationRestAPI(name="BreachCompilationRestAPI", host=host, port=port, username=username,
                                    password=password, dbname=dbname)
     # run the app
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host=app_host, port=app_port, debug=False)
 
 
 if __name__ == '__main__':

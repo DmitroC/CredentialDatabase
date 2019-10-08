@@ -74,7 +74,7 @@ VACUUM credentials."d";
 
 Delete a table completely
 <pre><code>
-drop credentials."d" cascade
+drop table credentials."d" cascade
 </code></pre>
 
 
