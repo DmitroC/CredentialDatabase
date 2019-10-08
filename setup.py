@@ -31,25 +31,20 @@ setup(
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Intended Audience :: End Users/Desktop",
-        "Intended Audience :: System Administrators",
         "License :: OSI Approved :: MIT",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.6",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
-        "Topic :: Internet :: Name Service (DNS)",
     ],
     entry_points={
         "console_scripts": [
-            'BreachCompilationApp = BreachCompilationRestAPI.app:main'
+            'BreachCompilationApp = BreachCompilationRestAPI.app:main',
+            'BreachCompilationDatabase = BreachCompilationDatabase.BreachCompilationDatabase:main'
         ],
     },
     zip_safe=False,

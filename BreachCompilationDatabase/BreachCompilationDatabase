@@ -264,7 +264,6 @@ def insert_data_in_db(email, password, username, provider, sha1, sha256, sha512,
 
 
 def main():
-    print("start script BreachCompilationDatabase")
 
     # arguments
     parser = argparse.ArgumentParser(description="script to insert BreachCompilation credentials into postgresql database")
@@ -274,16 +273,19 @@ def main():
     parser.add_argument('--password', type=str, help='password from user')
     parser.add_argument('--dbname', type=str, help='database name')
     parser.add_argument('--schema', type=str, help='schema of database')
-    parser.add_argument('--path', type=str, help='path of BreachCompilation')
+    parser.add_argument('--path', type=str, help='path to BreachCompilation Collection')
 
     args = parser.parse_args()
 
     formate_logger()
 
     if (args.host and args.port and args.user and args.password and args.dbname and args.schema and args.path) is None:
-        print("Please specify all arguments")
+        print("Wrong number of arguments. Use it like: ./BreachCompilationDatabase --host 192.168.1.2 --port 5432 --user "
+              "john --password test1234 --dbname postgres --schema credentials --path /path/to/BreachCompilation/data")
         exit(1)
     else:
+        print("start script BreachCompilationDatabase")
+
         # connecting to database pool
         db_conn_pool(args.host, args.port, args.user, args.password, args.dbname)
 

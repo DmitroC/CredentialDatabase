@@ -6,7 +6,6 @@ After=network-online.target
 [Service]
 Type=simple
 ExecStart=/usr/local/bin/BreachCompilationApp
-#WorkingDirectory=/var/lib/
 Restart=always
 User=christian
 Group=christian

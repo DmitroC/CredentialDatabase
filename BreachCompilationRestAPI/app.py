@@ -32,14 +32,15 @@ class BreachCompilationRestAPI:
         self.router.add_endpoint('/', 'index', method="GET", handler=self.api.index)
         self.router.add_endpoint('/api/passwords/', 'passwords', method="GET", handler=self.api.get_passwords)
 
-    def run(self, port=None, debug=None):
+    def run(self, host='0.0.0.0', port=None, debug=None):
         """ runs the BreachCompilationRestAPI application on given port
 
+        :param host: default hostname
         :param port: port for the webserver
         :param debug: debug mode true or false
         """
 
-        self.router.run(port=port, debug=debug)
+        self.router.run(host=host, port=port, debug=debug)
 
 
 def main():
@@ -55,7 +56,7 @@ def main():
     app = BreachCompilationRestAPI(name="BreachCompilationRestAPI", host=host, port=port, username=username,
                                    password=password, dbname=dbname)
     # run the app
-    app.run(port=5000, debug=False)
+    app.run(host='0.0.0.0', port=5000, debug=False)
 
 
 if __name__ == '__main__':

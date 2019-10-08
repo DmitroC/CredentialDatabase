@@ -174,40 +174,6 @@ finally insert the magnet link in the url field
 <hr>
 <br>
 
-### Database settings for the BreachCompilation credentials
 
-install PostgreSQL dependencies via apt
-
-<pre><code>
-sudo apt-get install postgresql libpq-dev postgresql-client postgresql-client-common
-</code></pre>
-
-Follow this [tutorial](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04) to set up a 
-postgresql environment. For graphical visualization install [pgAdmin4](https://www.pgadmin.org/download/).
-<br>
-
-Use the the script [BreachCompilationDatabase](BreachCompilationDatabase/BreachCompilationDatabase) 
-to create the necessary database structure
-
-
-- execute script in background 
-<pre><code>
-nohup ./BreachCompilationDatabase --host localhost --port 5432 --user christian --password test1234 --schema breachcompilation --path /home/christian/BreachCompilation &>/dev/null &
-</code></pre>
-
-
-#### index only scan to increase query perfomance
-
-create an index only scan
-<pre><code>
-CREATE index idx_pass_email on test."d"(email, password);
-</code></pre>
-
-vacuum the table, so that the visibility map to be up-to-date
-<pre><code>
-VACUUM test."d";
-</code></pre>
-
-http://wiki.postgresql.org/wiki/Tuning_Your_PostgreSQL_Server
 
 

@@ -5,13 +5,15 @@ Multithreaded script to insert the BreachCompilation credentials into a postgres
 ## Usage
 insert subsequent command to run this script completely in background
 <pre><code>
-nohup ./BreachCompilationDatabase --host localhost --port 5432 --user christian --password test1234 --schema breachcompilation --path /home/christian/Downloads/BreachCompilation &>/dev/null &
+nohup ./BreachCompilationDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 --schema credentials --path /path/to/BreachCompilation/data &>/dev/null &
 </code></pre>
+
+or use a tool like [screen](https://wiki.ubuntuusers.de/Screen/)
 
 ## Database structure
 creates for each number/letter (0-9,a-z) a table in defined schema (--schema argument) <br>
 
-elements in database: 
+Columns in database: 
 - id
 - email
 - password
@@ -30,5 +32,50 @@ elements in database:
 ## check logs
 
 <pre><code>
-tail -F trace_log.log
+tail -F trace.log
 </code></pre>
+
+<pre><code>
+tail -F insert_fail.log
+</code></pre>
+
+<pre><code>
+tail -F file.log
+</code></pre>
+
+### Postgresql database settings for the BreachCompilation credentials
+
+install PostgreSQL dependencies via apt
+
+<pre><code>
+sudo apt-get install postgresql libpq-dev postgresql-client postgresql-client-common
+</code></pre>
+
+Follow this [tutorial](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04) to set up a 
+postgresql environment. For graphical visualization install [pgAdmin4](https://www.pgadmin.org/download/).
+<br>
+
+Use the the script [BreachCompilationDatabase](BreachCompilationDatabase/BreachCompilationDatabase) 
+to create the necessary database structure
+
+
+
+#### Execute an index only scan to increase query perfomance
+
+create an index only scan for columns `email` and `password`
+<pre><code>
+CREATE index idx_pass_email on credentials."d"(email, password);
+</code></pre>
+
+vacuum the table, so that the visibility map to be up-to-date
+<pre><code>
+VACUUM credentials."d";
+</code></pre>
+
+Delete a table completely
+<pre><code>
+drop credentials."d" cascade
+</code></pre>
+
+
+Settings for tuning your postgresql server are [here](http://wiki.postgresql.org/wiki/Tuning_Your_PostgreSQL_Server)
