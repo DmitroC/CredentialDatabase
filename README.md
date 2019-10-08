@@ -16,7 +16,7 @@
 installation from source
 
 <pre><code>
-sudo python3 setup.py release install
+sudo python3 setup.py install
 </code></pre>
 
 execute command line script
@@ -31,44 +31,38 @@ sudo systemctl status BreachCompilationApp.service
 
 <hr>
 
-or build a rpm file to deploy it on a server
+## Deployment on server
+
+create a wheel for installing the package with pip
 <pre><code>
-sudo apt install rpm alien
+sudo python3 setup.py bdist_wheel
 </code></pre>
 
-create a release rpm package with setup.py
+copy the wheel package to target server, replace user and host for your needs
 <pre><code>
-sudo python3 setup.py release bdist_rpm
+scp BreachCompilationRestAPI-1.0.0-py3-none-any.whl user@host:/home/user
 </code></pre>
 
-change into folder `dist`
+install the package with pip
 <pre><code>
-sudo alien -i BreachCompilationRestAPI-1.0.0-1.noarch.rpm
+pip3 install BreachCompilationRestAPI-1.0.0-py3-none-any.whl
 </code></pre>
 
-copy the rpm file to target server and install the rpm package with the alien tool  
+uninstall the package with pip 
 <pre><code>
-sudo alien -i BreachCompilationRestAPI-1.0.0-1.noarch.rpm
+pip3 uninstall BreachCompilationRestAPI
 </code></pre>
 
-or create first a debian package and install with `dpkg -i`
+execute the console script BreachCompilationDatabase
 <pre><code>
-sudo alien BreachCompilationRestAPI-1.0.0-1.noarch.rpm
-sudo dpkg -i breachcompilationrestapi_1.0.0-2_all.deb
+BreachCompilationDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 --schema credentials --path /path/to/BreachCompilation
 </code></pre>
 
-execute command line script
+or execute the console script BreachCompilationApp
 <pre><code>
-BreachCompilationApp
+BreachCompilationApp --app-host 127.0.0.1 --app-port 5050
 </code></pre>
 
-or use the systemd service file
-<pre><code>
-sudo systemctl status BreachCompilationApp.service
-</code></pre>
-
-<br>
-<hr>
 <br>
 
 ### BreachCompilation structure and usage
@@ -106,8 +100,6 @@ each file includes email adresses and passwords(email and password are seperated
 AB-HK@hotmail.com:apple1
 </code></pre>
 
-<br>
-<hr>
 <br>
 
 ### Download BreachCompilation via transmission software
@@ -169,10 +161,6 @@ finally insert the magnet link in the url field
   <br>
   <img src="res/transmission_enter_magnet_url.png" alt="example" width="900" height="115">
 </div>
-
-<br>
-<hr>
-<br>
 
 
 
