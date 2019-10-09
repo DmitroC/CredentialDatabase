@@ -1,14 +1,13 @@
 
 
 class CursorContextManager:
-    """ class CursorContextManager
+    """ class CursorContextManager to create the cursor object within a context
 
     USAGE:
             CursorContextManager(pool=pool, autocommit=False)
 
     """
     def __init__(self, pool, autocommit=False):
-
         self.pool = pool
         self.autocommit = autocommit
         self.conn = None
@@ -45,21 +44,20 @@ class CursorContextManager:
 
 
 class ConnectionContextManager:
-    """ class ConnectionContextManager
+    """ class ConnectionContextManager to create the connection object within a context
 
     USAGE:
             ConnectionContextManager(pool=pool, autocommit=False)
 
     """
     def __init__(self, pool, autocommit=False):
-
         self.pool = pool
         self.autocommit = autocommit
 
     def __enter__(self):
         """ implicit enter context for a connection object generated from ThreadedConnectionPool
 
-        :return:
+        :return: connection object
         """
 
         self.conn = self.pool.getconn()
@@ -78,3 +76,4 @@ class ConnectionContextManager:
         self.conn.rollback()
         self.conn.autocommit = False
         self.pool.putconn(self.conn)
+

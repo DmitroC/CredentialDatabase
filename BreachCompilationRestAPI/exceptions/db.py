@@ -8,3 +8,9 @@ class DBConnectorError(ConnectionError):
 class DBCreatorError(Exception):
     """DBCreatorException"""
     pass
+
+
+class DBInserterError(Exception):
+    """DBInserterException"""
+    pass
+

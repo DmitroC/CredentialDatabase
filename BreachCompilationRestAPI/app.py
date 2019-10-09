@@ -5,6 +5,7 @@ from configparser import ConfigParser
 
 from BreachCompilationRestAPI.routes.router import Router
 from BreachCompilationRestAPI.api import APIHandler
+from BreachCompilationRestAPI.utils.logger import Logger
 from BreachCompilationRestAPI import ROOT_DIR
 
 # load config file
@@ -44,14 +45,19 @@ class BreachCompilationRestAPI:
 
 
 def main():
-    # arguments
 
+    # set up logger instance
+    logger = Logger(name='BreachCompilationRestAPI', level='info', log_folder='var/log/', debug=True)
+    logger.info("start application BreachCompilationRestAPI")
+
+    # arguments
     parser = argparse.ArgumentParser(description="arguments for BreachCompilationApp")
     parser.add_argument('--host', type=str, help='hostname to connect to the database')
     parser.add_argument('--port', type=str, help='port to connect to the database')
     parser.add_argument('--user', type=str, help='user of the database')
     parser.add_argument('--password', type=str, help='password from user')
     parser.add_argument('--dbname', type=str, help='database name')
+    parser.add_argument('--schema', type=str, help='schema name')
     parser.add_argument('--app-host', type=str, help='hostname for the application')
     parser.add_argument('--app-port', type=str, help='port for the application')
     args = parser.parse_args()
@@ -64,12 +70,15 @@ def main():
         username = config.get('database', 'username')
         password = config.get('database', 'password')
         dbname   = config.get('database', 'dbname')
+        schema = config.get('database', 'schema')
+
     else:
         host     = args.host
         port     = args.port
         username = args.user
         password = args.password
         dbname   = args.dbname
+        schema   = args.schema
 
     if args.app_host is None:
         app_host = '0.0.0.0'

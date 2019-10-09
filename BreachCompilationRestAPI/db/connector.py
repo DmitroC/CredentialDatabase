@@ -1,3 +1,4 @@
+import logging
 import psycopg2
 from psycopg2.pool import ThreadedConnectionPool
 
@@ -11,15 +12,18 @@ class DBConnector:
     USAGE:
             connector = DBConnector()
             connector.connect(host, port, username, password, dbname, minConn=1, maxConn=10)
+
     """
+    # attribute for connection pools
+    pool = None
+
     def __init__(self):
+        self.logger = logging.getLogger('BreachCompilationRestAPI')
+        self.logger.info('create class DBConnector')
 
-        # attribute for connection pools
-        self.pool = None
-
-    def connect(self, host, port, username, password, dbname, minConn=1, maxConn=10):
-        """ connect to ThreadedConnectionPool
-
+    @classmethod
+    def connect(cls, host, port, username, password, dbname, minConn=1, maxConn=10):
+        """ connection to the ThreadedConnectionPool
         :param host: hostname of database
         :param port: port of database
         :param username: username for connection
@@ -30,13 +34,16 @@ class DBConnector:
         """
         try:
             # create connection pool
-            self.pool = ThreadedConnectionPool(minconn=minConn, maxconn=maxConn, user=username,
+            cls.pool = ThreadedConnectionPool(minconn=minConn, maxconn=maxConn, user=username,
                                                password=password, host=host, port=port, database=dbname)
+
         except psycopg2.DatabaseError as e:
-            print(e)
+            logging.getLogger('BreachCompilationRestAPI').error('Could not connect to ThreadedConnectionPool: {}'.format(e))
 
     def get_cursor(self, autocommit=False):
         """ get a cursor object from ConnectionPool
+
+        :param autocommit: bool to enable autocommit
 
         :return: cursor object
         """
@@ -47,6 +54,8 @@ class DBConnector:
 
     def get_conn(self, autocommit=False):
         """ get a connection object from ConnectionPool
+
+        :param autocommit: bool to enable autocommit
 
         :return: connection object
         """
