@@ -5,7 +5,7 @@ Multithreaded script to insert the BreachCompilation credentials into a postgres
 ## Usage
 insert subsequent command to run this script completely in background
 <pre><code>
-nohup ./BreachCompilationDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 --schema credentials --path /path/to/BreachCompilation &>/dev/null &
+nohup ./BreachCompilationDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname credentials --schema breachcompilation --path /path/to/BreachCompilation &>/dev/null &
 </code></pre>
 
 or use a tool like [screen](https://wiki.ubuntuusers.de/Screen/)
@@ -70,17 +70,17 @@ to create the necessary database structure
 
 create an index only scan for columns `email` and `password`
 <pre><code>
-CREATE index idx_pass_email on credentials."d"(email, password);
+CREATE index idx_pass_email on breachcompilation."d"(email, password);
 </code></pre>
 
 vacuum the table, so that the visibility map to be up-to-date
 <pre><code>
-VACUUM credentials."d";
+VACUUM breachcompilation."d";
 </code></pre>
 
 Delete a table completely
 <pre><code>
-drop table credentials."d" cascade
+drop table breachcompilation."d" cascade
 </code></pre>
 
 

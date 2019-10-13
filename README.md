@@ -36,12 +36,12 @@ pip3 uninstall BreachCompilationRestAPI
 
 execute the console script `BreachCompilationDatabase`
 <pre><code>
-BreachCompilationDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 --schema credentials --path /path/to/BreachCompilation
+BreachCompilationDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname credentials --schema breachcompilation --path /path/to/BreachCompilation
 </code></pre>
 
 or execute the console script `BreachCompilationApp`
 <pre><code>
-BreachCompilationApp --app-host 127.0.0.1 --app-port 5050 --host 192.168.1.2 --port 5432 --user john --password test1234 --schema credentials
+BreachCompilationApp --app-host 127.0.0.1 --app-port 5050 --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname credentials
 </code></pre>
 
 or use the systemd service file
