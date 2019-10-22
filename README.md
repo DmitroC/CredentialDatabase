@@ -1,7 +1,12 @@
 ## REST API for the leaked BreachCompilation credentials
 
 **BreachCompilation** includes billion clear text credentials discovered in a single database
-(file size: ~42GB). The aim of this repo is to create a REST API interface similar to the [ghostproject](https://ghostproject.fr/)<br>
+(file size: ~42GB) <br>
+
+- develop awesome brute-force attacks 
+- build up a huge hash table for SHA1, SHA256, SHA512 and md5 hashes
+- create a REST API interface similar to the [ghostproject](https://ghostproject.fr/)
+
 
 ## Content 
 

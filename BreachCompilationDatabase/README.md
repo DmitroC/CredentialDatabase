@@ -1,6 +1,8 @@
 ## BreachCompilationDatabase
 
 Multithreaded script to insert the BreachCompilation credentials into a postgresql database
+- script runtime about 8 days
+- needs disk space for about 569 GB (without index only scan)
 
 ## Usage
 insert subsequent command to run this script completely in background
@@ -32,7 +34,7 @@ Columns in database:
 </div>
 
 ## check logs
-trace logs
+trace log
 <pre><code>
 tail -F trace.log
 </code></pre>
@@ -78,7 +80,7 @@ vacuum the table, so that the visibility map to be up-to-date
 VACUUM breachcompilation."d";
 </code></pre>
 
-Delete a table completely
+Delete a table completely with
 <pre><code>
 drop table breachcompilation."d" cascade
 </code></pre>
