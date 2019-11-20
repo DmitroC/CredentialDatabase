@@ -8,7 +8,6 @@ import argparse
 import psycopg2
 from psycopg2 import pool
 from logging.handlers import RotatingFileHandler
-from string import ascii_lowercase
 
 # set up logger
 trace_logger = logging.getLogger('trace_logger')
@@ -19,10 +18,12 @@ file_logger = logging.getLogger('file_logger')
 file_logger.setLevel(logging.INFO)
 
 counter = dict()
+structure = '0123456789abcdefghijklmnopqrstuvwxyz'
 chars = set('0123456789abcdefghijklmnopqrstuvwxyz')
 for i in chars:
     counter.update({i: 1})
 counter_sym = 1
+counter_pass = 1
 
 
 def formate_logger():
@@ -37,15 +38,15 @@ def formate_logger():
     formatter = logging.Formatter('%(asctime)s - %(lineno)d@%(filename)s - %(levelname)s: %(message)s')
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)
-    trace_rotate_handler = RotatingFileHandler(log_dir + '/trace.log', mode='a', maxBytes=30000000)
+    trace_rotate_handler = RotatingFileHandler(log_dir + '/trace.log', mode='a', maxBytes=20000000, backupCount=5)
     trace_rotate_handler.setFormatter(formatter)
     trace_rotate_handler.setLevel(logging.INFO)
 
-    insertfail_rotate_handler = RotatingFileHandler(log_dir + '/insert_fail.log', mode='a', maxBytes=30000000)
+    insertfail_rotate_handler = RotatingFileHandler(log_dir + '/insert_fail.log', mode='a', maxBytes=20000000, backupCount=5)
     insertfail_rotate_handler.setFormatter(formatter)
     insertfail_rotate_handler.setLevel(logging.WARNING)
 
-    file_rotate_handler = RotatingFileHandler(log_dir + '/file.log', mode='a', maxBytes=30000000)
+    file_rotate_handler = RotatingFileHandler(log_dir + '/file.log', mode='a', maxBytes=20000000, backupCount=5)
     file_rotate_handler.setFormatter(formatter)
     file_rotate_handler.setLevel(logging.INFO)
 
@@ -64,35 +65,35 @@ def db_conn_pool(host, port, user, password, dbname):
     threaded_postgresql_pool = psycopg2.pool.ThreadedConnectionPool(10, 40, user=user, password=password,
                                                                     host=host, port=port, database=dbname)
 
+def create_schemas_and_tables():
+    trace_logger.info("create schemas and tables for breachcompilation credentials")
 
-def create_tables(schema_p):
-    trace_logger.info("create schema/table for breach compilation credentials")
-    global schema
-    schema = schema_p
-
-    query_schema = "create schema if not exists {};".format(schema)
+    # database options
     table_conn = threaded_postgresql_pool.getconn()
     cursor = table_conn.cursor()
-    cursor.execute(query_schema)
-    table_conn.commit()
 
-    # tables for numbers
-    for i in range(10):
-        query_table = "create table if not exists {}.\"{}\" (id bigint primary key, email text, password text, username text, provider text, sha1 varchar(40), sha256 varchar(64), sha512 varchar(128), md5 varchar(32));".format(schema, i)
-        cursor.execute(query_table)
+    schema_struct = list(structure)
+    schema_struct.append('symbols')
+    schema_struct.append('passwords')
+    for schema in schema_struct:
+        schema_sql = "create schema if not exists \"{}\"".format(schema)
+        cursor.execute(schema_sql)
         table_conn.commit()
-
-    # tables for letters
-    for c in ascii_lowercase:
-        query_table = "create table if not exists {}.\"{}\" (id bigint primary key, email text, password text, username text, provider text, sha1 varchar(40), sha256 varchar(64), sha512 varchar(128), md5 varchar(32));".format(schema, c)
-        cursor.execute(query_table)
-        table_conn.commit()
-
-    # table for symbols
-    query_table = "create table if not exists {}.symbols (id bigint primary key, email text, password text, username text, provider text, sha1 varchar(40), sha256 varchar(64), sha512 varchar(128), md5 varchar(32));".format(schema)
-    cursor.execute(query_table)
-    table_conn.commit()
-
+        if schema == 'symbols':
+            table_sql = "create table if not exists \"{}\".symbols (id bigint primary key, email text, password text, username text, provider text, sha1 varchar(40), sha256 varchar(64), sha512 varchar(128), md5 varchar(32));".format(schema)
+            cursor.execute(table_sql)
+            table_conn.commit()
+        elif schema == 'passwords':
+            for table in schema_struct:
+                if table != 'passwords':
+                    table_sql = "create table if not exists \"{}\".\"{}\" (id bigint, password text primary key);".format(schema, table)
+                    cursor.execute(table_sql)
+                    table_conn.commit()
+        else:
+            for table in schema_struct:
+                table_sql = "create table if not exists \"{}\".\"{}\" (id bigint primary key, email text, password text, username text, provider text, sha1 varchar(40), sha256 varchar(64), sha512 varchar(128), md5 varchar(32));".format(schema, table)
+                cursor.execute(table_sql)
+                table_conn.commit()
 
 def iterate_data_root_dir(breach_compilation_path):
 
@@ -208,6 +209,7 @@ def generate_hashes(password):
 def insert_data_in_db(email, password, username, provider, sha1, sha256, sha512, md5):
     global counter, counter_sym
     first_char_email = email[0].lower()
+    second_char_email = email[1].lower()
     chars = set('0123456789abcdefghijklmnopqrstuvwxyz')
 
     if first_char_email in chars:
@@ -217,7 +219,7 @@ def insert_data_in_db(email, password, username, provider, sha1, sha256, sha512,
         cursor = char_conn.cursor()
 
         try:
-            query_str = "insert into {}.\"{}\"(id, email, password, username, provider, sha1, sha256, sha512, md5) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)".format(schema, first_char_email)
+            query_str = "insert into \"{}\".\"{}\"(id, email, password, username, provider, sha1, sha256, sha512, md5) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)".format(first_char_email, second_char_email)
 
             cursor.execute(query_str, data)
             char_conn.commit()
@@ -241,7 +243,7 @@ def insert_data_in_db(email, password, username, provider, sha1, sha256, sha512,
         cursor = sym_conn.cursor()
 
         try:
-            query_str = "insert into {}.symbols(id, email, password, username, provider, sha1, sha256, sha512, md5) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)".format(schema)
+            query_str = "insert into symbols.symbols(id, email, password, username, provider, sha1, sha256, sha512, md5) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
             cursor.execute(query_str, data)
             sym_conn.commit()
 
@@ -260,6 +262,21 @@ def insert_data_in_db(email, password, username, provider, sha1, sha256, sha512,
             sym_conn.commit()
 
 
+def create_pass():
+
+    pass_data = (counter_pass, str(password))
+    pass_conn = threaded_postgresql_pool.getconn(key='password')
+    cursor = pass_conn.cursor()
+    password_str = "insert into \"passwords\".\"{}\"(id, password) VALUES (%s, %s)".format(first_char_password)
+    try:
+        cursor.execute(password_str, pass_data)
+    except psycopg2.IntegrityError as e:
+        trace_logger.error(e)
+        pass_conn.rollback()
+    else:
+        pass_conn.commit()
+        counter_pass += 1
+
 def main():
 
     # arguments
@@ -269,12 +286,11 @@ def main():
     parser.add_argument('--user', type=str, help='user of database')
     parser.add_argument('--password', type=str, help='password from user')
     parser.add_argument('--dbname', type=str, help='database name')
-    parser.add_argument('--schema', type=str, help='schema of database')
     parser.add_argument('--path', type=str, help='path to BreachCompilation Collection')
 
     args = parser.parse_args()
 
-    if (args.host and args.port and args.user and args.password and args.dbname and args.schema and args.path) is None:
+    if (args.host and args.port and args.user and args.password and args.dbname and args.path) is None:
         print("Wrong number of arguments. Use it like: ./BreachCompilationDatabase.py --host 192.168.1.2 --port 5432 --user "
               "john --password test1234 --dbname credentials --schema breachcompilation --path /path/to/BreachCompilation")
         exit(1)
@@ -288,7 +304,7 @@ def main():
         db_conn_pool(args.host, args.port, args.user, args.password, args.dbname)
 
         # check and create schema as well as all tables in database
-        create_tables(args.schema)
+        create_schemas_and_tables()
 
         # creates for each directory a worker thread to extract all credentials
         iterate_data_root_dir(args.path)
