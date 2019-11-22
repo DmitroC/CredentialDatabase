@@ -260,22 +260,7 @@ def insert_data_in_db(email, password, username, provider, sha1, sha256, sha512,
             insertfail_logger.error(e)
             insertfail_logger.error(str(data))
             sym_conn.commit()
-
-
-def create_pass():
-
-    pass_data = (counter_pass, str(password))
-    pass_conn = threaded_postgresql_pool.getconn(key='password')
-    cursor = pass_conn.cursor()
-    password_str = "insert into \"passwords\".\"{}\"(id, password) VALUES (%s, %s)".format(first_char_password)
-    try:
-        cursor.execute(password_str, pass_data)
-    except psycopg2.IntegrityError as e:
-        trace_logger.error(e)
-        pass_conn.rollback()
-    else:
-        pass_conn.commit()
-        counter_pass += 1
+            
 
 def main():
 
