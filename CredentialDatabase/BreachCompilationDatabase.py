@@ -74,7 +74,6 @@ def create_schemas_and_tables():
 
     schema_struct = list(structure)
     schema_struct.append('symbols')
-    schema_struct.append('passwords')
     for schema in schema_struct:
         schema_sql = "create schema if not exists \"{}\"".format(schema)
         cursor.execute(schema_sql)
@@ -83,12 +82,6 @@ def create_schemas_and_tables():
             table_sql = "create table if not exists \"{}\".symbols (id bigint primary key, email text, password text, username text, provider text, sha1 varchar(40), sha256 varchar(64), sha512 varchar(128), md5 varchar(32));".format(schema)
             cursor.execute(table_sql)
             table_conn.commit()
-        elif schema == 'passwords':
-            for table in schema_struct:
-                if table != 'passwords':
-                    table_sql = "create table if not exists \"{}\".\"{}\" (id bigint, password text primary key);".format(schema, table)
-                    cursor.execute(table_sql)
-                    table_conn.commit()
         else:
             for table in schema_struct:
                 table_sql = "create table if not exists \"{}\".\"{}\" (id bigint primary key, email text, password text, username text, provider text, sha1 varchar(40), sha256 varchar(64), sha512 varchar(128), md5 varchar(32));".format(schema, table)
@@ -260,7 +253,7 @@ def insert_data_in_db(email, password, username, provider, sha1, sha256, sha512,
             insertfail_logger.error(e)
             insertfail_logger.error(str(data))
             sym_conn.commit()
-            
+
 
 def main():
 

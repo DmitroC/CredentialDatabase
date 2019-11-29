@@ -12,9 +12,9 @@ with open("CHANGELOG.rst") as f:
     changelog = f.read()
 
 setup(
-    name="BreachCompilationRestAPI",
+    name="CredentialDatabase",
     version=__version__,
-    description="Rest API for the BreachCompilation collection",
+    description="creates a massive credential database",
     long_description=readme + "\n\n" + changelog,
     license=__license__,
     author=__author__,
@@ -26,7 +26,7 @@ setup(
     ],
     package_data={'BreachCompilationRestAPI': ['config/*']},
     install_requires=required,
-    keywords=["BreachCompilation", "credentials", "leaked", "REST API"],
+    keywords=["BreachCompilation", "credentials", "leaked", "database"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
@@ -44,7 +44,8 @@ setup(
     entry_points={
         "console_scripts": [
             'BreachCompilationApp = BreachCompilationRestAPI.app:main',
-            'BreachCompilationDatabase = BreachCompilationDatabase.BreachCompilationDatabase:main'
+            'BreachCompilationDatabase = CredentialDatabase.breachcompilation.BreachCompilationDatabase:main',
+            'PasswordDatabase = CredentialDatabase.PasswordDatabase:main'
         ],
     },
     zip_safe=False,

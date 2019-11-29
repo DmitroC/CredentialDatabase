@@ -7,7 +7,7 @@ Multithreaded script to insert the BreachCompilation credentials into a postgres
 ## Usage
 insert subsequent command to run this script completely in background
 <pre><code>
-nohup ./BreachCompilationDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname credentials --schema breachcompilation --path /path/to/BreachCompilation &>/dev/null &
+nohup ./BreachCompilationDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname breachcompilation --path /path/to/BreachCompilation &>/dev/null &
 </code></pre>
 
 or use a tool like [screen](https://wiki.ubuntuusers.de/Screen/)
