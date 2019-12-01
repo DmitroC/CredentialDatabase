@@ -15,7 +15,7 @@ from files
 
 ## Content 
 
-- [CredentialDatabase](https://github.com/bierschi/CredentialDatabase#installation)
+- [CredentialDatabase](https://github.com/bierschi/CredentialDatabase#usage-and-installation)
 - [BreachCompilation structure and usage](https://github.com/bierschi/CredentialDatabase#breachcompilation-structure-and-usage)
 - [Download BreachCompilation via transmission software](https://github.com/bierschi/CredentialDatabase#download-breachcompilation-via-transmission-software)
 
