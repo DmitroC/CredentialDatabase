@@ -8,6 +8,7 @@ from files
 - build up a huge hash table for SHA1, SHA256, SHA512 and md5 hashes
 - create a REST API interface similar to the [ghostproject](https://ghostproject.fr/)
 - create a massive password database
+- multithreaded database scripts
 
 **BreachCompilation** includes billion clear text credentials discovered in a single database
 (file size: ~42GB) <br>
