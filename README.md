@@ -1,19 +1,23 @@
-## REST API for the leaked BreachCompilation credentials
+## CredentialDatabase
+
+Create a massive credential database with a collection like **BreachCompilation** or extract credentials
+from files
+
+**Features** of CredentialDatabase:
+- develop awesome brute-force/credstuffer attacks which are based on CredentialDatabase
+- build up a huge hash table for SHA1, SHA256, SHA512 and md5 hashes
+- create a REST API interface similar to the [ghostproject](https://ghostproject.fr/)
+- create a massive password database
 
 **BreachCompilation** includes billion clear text credentials discovered in a single database
 (file size: ~42GB) <br>
 
-- develop awesome brute-force attacks 
-- build up a huge hash table for SHA1, SHA256, SHA512 and md5 hashes
-- create a REST API interface similar to the [ghostproject](https://ghostproject.fr/)
-
 
 ## Content 
 
-- [BreachCompilationRestAPI Application](https://github.com/bierschi/BreachCompilationRestAPI#installation)
-- [BreachCompilation structure and usage](https://github.com/bierschi/BreachCompilationRestAPI#breachcompilation-structure-and-usage)
-- [Download BreachCompilation via transmission software](https://github.com/bierschi/BreachCompilationRestAPI#download-breachcompilation-via-transmission-software)
-- [Database script and settings for the BreachCompilation credentials](https://github.com/bierschi/BreachCompilationRestAPI/tree/master/BreachCompilationDatabase)
+- [CredentialDatabase](https://github.com/bierschi/CredentialDatabase#installation)
+- [BreachCompilation structure and usage](https://github.com/bierschi/CredentialDatabase#breachcompilation-structure-and-usage)
+- [Download BreachCompilation via transmission software](https://github.com/bierschi/CredentialDatabase#download-breachcompilation-via-transmission-software)
 
 <br>
 
@@ -31,30 +35,43 @@ sudo python3 setup.py bdist_wheel
 
 install the package with pip
 <pre><code>
-pip3 install BreachCompilationRestAPI-1.0.0-py3-none-any.whl
+pip3 install CredentialDatabase-1.0.0-py3-none-any.whl
 </code></pre>
 
 uninstall the package with pip 
 <pre><code>
-pip3 uninstall BreachCompilationRestAPI
-</code></pre>
-
-execute the console script `BreachCompilationDatabase`
-<pre><code>
-BreachCompilationDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname credentials --schema breachcompilation --path /path/to/BreachCompilation
-</code></pre>
-
-or execute the console script `BreachCompilationApp`
-<pre><code>
-BreachCompilationApp --app-host 127.0.0.1 --app-port 5050 --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname credentials
+pip3 uninstall CredentialDatabase
 </code></pre>
 
 or use the systemd service file
 <pre><code>
-sudo systemctl status BreachCompilationApp.service
+sudo systemctl status CredentialDatabase.service
 </code></pre>
 
-<br>
+
+### BreachCompilationDatabase.py
+
+execute the console script `BreachCompilationDatabase`
+<pre><code>
+BreachCompilationDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname breachcompilation --breachpath /path/to/BreachCompilation
+</code></pre>
+
+Database structure:
+<pre><code>
+id | email | password | username | provider | sh1 | sh256 | sh512 | md5 
+</code></pre>
+
+### PasswordDatabase.py 
+
+execute the console script `PasswordDatabase`
+<pre><code>
+PasswordDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname passwords --breachpath /path/to/BreachCompilation
+</code></pre>
+
+Database structure:
+<pre><code>
+password | length | isnumber | issymbol 
+</code></pre>
 
 ### BreachCompilation structure and usage
 <pre><code>
