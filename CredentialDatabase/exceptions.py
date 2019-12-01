@@ -1,3 +1,5 @@
+from psycopg2 import Error
+
 
 class DBConnectorError(ConnectionError):
     """DBConnectorException"""
@@ -11,4 +13,9 @@ class DBCreatorError(Exception):
 
 class DBInserterError(Exception):
     """DBInserterException"""
+    pass
+
+
+class DBIntegrityError(Exception):
+    """DBIntegrityError"""
     pass

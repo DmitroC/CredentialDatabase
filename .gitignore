@@ -106,6 +106,4 @@ venv.bak/
 #project
 .idea/
 BreachCompilation/
-BreachCompilationRestAPI/config/cfg.ini
-
 CredentialDatabase/config/cfg.ini

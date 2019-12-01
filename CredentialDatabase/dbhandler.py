@@ -28,7 +28,7 @@ class DBHandler:
             self.logger.error("no database params provided!")
 
         DBConnector.connect_psycopg(host=self.db_host, port=self.db_port, username=self.db_username,
-                                    password=self.db_password, dbname=self.db_name, minConn=1, maxConn=10)
+                                    password=self.db_password, dbname=self.db_name, minConn=1, maxConn=40)
 
         self.dbcreator = DBCreator()
         self.dbfetcher = DBFetcher()
@@ -51,7 +51,7 @@ class DBHandler:
 
             if schema == 'symbols':
                 if self.password_db:
-                    table_sql = "create table if not exists \"{}\".symbols (id bigint, password text primary key, length bigint, isNumber boolean, isSymbol boolean);".format(schema)
+                    table_sql = "create table if not exists \"{}\".symbols (password text primary key, length bigint, isNumber boolean, isSymbol boolean);".format(schema)
                 else:
                     table_sql = "create table if not exists \"{}\".symbols (id bigint primary key, email text, password text, username text, provider text, sha1 varchar(40), sha256 varchar(64), sha512 varchar(128), md5 varchar(32));".format(schema)
                 self.dbinserter.sql(sql=table_sql)
@@ -59,7 +59,7 @@ class DBHandler:
             else:
                 for table in schema_list:
                     if self.password_db:
-                        table_sql = "create table if not exists \"{}\".\"{}\" (id bigint, password text primary key, length bigint, isNumber boolean, isSymbol boolean);".format(schema, table)
+                        table_sql = "create table if not exists \"{}\".\"{}\" (password text primary key, length bigint, isNumber boolean, isSymbol boolean);".format(schema, table)
                     else:
                         table_sql = "create table if not exists \"{}\".\"{}\" (id bigint primary key, email text, password text, username text, provider text, sha1 varchar(40), sha256 varchar(64), sha512 varchar(128), md5 varchar(32));".format(schema, table)
                     self.dbinserter.sql(sql=table_sql)

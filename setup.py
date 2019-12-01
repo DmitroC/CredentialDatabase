@@ -22,11 +22,11 @@ setup(
     url="https://github.com/bierschi/BreachCompilationRestAPI",
     packages=find_packages(),
     data_files=[
-        ('/etc/systemd/system', ['service/BreachCompilationApp.service'])
+        ('/etc/systemd/system', ['service/CredentialDatabase.service'])
     ],
-    package_data={'BreachCompilationRestAPI': ['config/*']},
+    package_data={'CredentialDatabase': ['config/*']},
     install_requires=required,
-    keywords=["BreachCompilation", "credentials", "leaked", "database"],
+    keywords=["BreachCompilation", "credentials", "leaked", "database", "CredentialDatabase"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
@@ -43,9 +43,8 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            'BreachCompilationApp = BreachCompilationRestAPI.app:main',
-            'BreachCompilationDatabase = CredentialDatabase.breachcompilation.BreachCompilationDatabase:main',
-            'PasswordDatabase = CredentialDatabase.PasswordDatabase:main'
+            'BreachCompilationDatabase = CredentialDatabase.scripts.BreachCompilationDatabase:main',
+            'PasswordDatabase = CredentialDatabase.scripts.PasswordDatabase:main'
         ],
     },
     zip_safe=False,

@@ -3,8 +3,8 @@
 import argparse
 from configparser import ConfigParser
 
-from BreachCompilationRestAPI.routes.router import Router
-from BreachCompilationRestAPI.api import APIHandler
+from CredentialDatabase.breachcompilationrestapi.routes.router import Router
+from CredentialDatabase.breachcompilationrestapi.routes.api import APIHandler
 from BreachCompilationRestAPI.utils.logger import Logger
 from BreachCompilationRestAPI import ROOT_DIR
 

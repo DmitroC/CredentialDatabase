@@ -63,7 +63,7 @@ Follow this [tutorial](https://www.digitalocean.com/community/tutorials/how-to-i
 postgresql environment. For graphical visualization install [pgAdmin4](https://www.pgadmin.org/download/).
 <br>
 
-Use the the script [BreachCompilationDatabase](BreachCompilationDatabase.py) 
+Use the the script [BreachCompilationDatabase](scripts/BreachCompilationDatabase.py) 
 to create the necessary database structure
 
 <br>
