@@ -59,6 +59,12 @@ execute the console script `BreachCompilationDatabase`
 BreachCompilationDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname breachcompilation --breachpath /path/to/BreachCompilation
 </code></pre>
 
+insert subsequent command to run the script completely in background
+<pre><code>
+nohup BreachCompilationDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname breachcompilation --breachpath /path/to/BreachCompilation &>/dev/null &
+</code></pre>
+or use a tool like [screen](https://wiki.ubuntuusers.de/Screen/)
+
 Database structure:
 <pre><code>
 id | email | password | username | provider | sh1 | sh256 | sh512 | md5 
@@ -70,6 +76,12 @@ execute the console script `PasswordDatabase`
 <pre><code>
 PasswordDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname passwords --breachpath /path/to/BreachCompilation
 </code></pre>
+
+insert subsequent command to run the script completely in background
+<pre><code>
+nohup PasswordDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname breachcompilation --breachpath /path/to/BreachCompilation &>/dev/null &
+</code></pre>
+or use a tool like [screen](https://wiki.ubuntuusers.de/Screen/)
 
 Database structure:
 <pre><code>
