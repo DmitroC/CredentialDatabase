@@ -24,13 +24,15 @@ class PasswordDatabase:
 def main():
 
     # arguments
-    parser = argparse.ArgumentParser(description="script to insert passwords in a database")
+    parser = argparse.ArgumentParser(description="script to insert passwords in a database. \nUsage: PasswordDatabase "
+                                                 "--host 192.168.1.2 --port 5432 --user john -password test1234 "
+                                                 "--dbname postgres --breachpath /tmp/BreachCompilation")
     parser.add_argument('--host',       type=str, help='hostname to connect to the database')
     parser.add_argument('--port',       type=str, help='port to connect to the database')
     parser.add_argument('--user',       type=str, help='user of the database')
     parser.add_argument('--password',   type=str, help='password from the user')
     parser.add_argument('--dbname',     type=str, help='database name')
-    parser.add_argument('--breachpath', type=str, help='path to the BreachCompilation Collection')
+    parser.add_argument('--breachpath', type=str, help='path to the BreachCompilation collection folder')
 
     args = parser.parse_args()
 

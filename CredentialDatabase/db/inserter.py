@@ -1,6 +1,6 @@
 import logging
 from CredentialDatabase.db.connector import DBConnector
-from CredentialDatabase.exceptions import DBInserterError, DBIntegrityError, Error
+from CredentialDatabase.exceptions import DBInserterError, DBIntegrityError
 
 
 class DBInserter(DBConnector):

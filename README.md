@@ -1,7 +1,7 @@
 ## CredentialDatabase
 
-Create a massive credential database with a collection like **BreachCompilation** or extract credentials
-from files
+Create a massive credential database with collections like **BreachCompilation** or extract credentials
+from password files
 
 **Features** of CredentialDatabase:
 - develop awesome brute-force/credstuffer attacks which are based on CredentialDatabase
