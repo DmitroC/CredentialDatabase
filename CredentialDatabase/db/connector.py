@@ -6,6 +6,7 @@ from CredentialDatabase.exceptions import DBConnectorError
 try:
     import psycopg2
     from psycopg2.pool import ThreadedConnectionPool
+    from psycopg2 import Error
     is_psycopg2_importable=True
 except ImportError as ex:
     is_psycopg2_importable=False

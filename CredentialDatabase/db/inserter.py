@@ -1,5 +1,5 @@
 import logging
-from CredentialDatabase.db.connector import DBConnector
+from CredentialDatabase.db.connector import DBConnector, Error
 from CredentialDatabase.exceptions import DBInserterError, DBIntegrityError
 
 
