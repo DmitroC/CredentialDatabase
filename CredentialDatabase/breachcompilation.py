@@ -34,6 +34,7 @@ class BreachCompilation(DBHandler):
         for i in self.chars:
             self.counter.update({i: 1})
         self.counter_sym = 1
+        self.counter_passworddb = 1
 
     def start_iteration(self):
         """ starts the iteration worker threads
@@ -185,7 +186,9 @@ class BreachCompilation(DBHandler):
                         first_char_password, second_char_password)
                     try:
                         self.dbinserter.row(sql=query_str, data=data, autocommit=True)
-                        self.logger.info("Database entry: " + str(data))
+                        self.counter_passworddb += 1
+                        if (self.counter_passworddb % 1000) == 0:
+                            self.logger.info("Database entry: " + str(data))
                     except DBIntegrityError as e:
                         self.logger.error(e)
 
@@ -195,7 +198,9 @@ class BreachCompilation(DBHandler):
                     query_str = "insert into symbols.symbols(password, length, isnumber, issymbol) VALUES (%s, %s, %s, %s)"
                     try:
                         self.dbinserter.row(sql=query_str, data=data, autocommit=True)
-                        self.logger.info("Database entry: " + str(data))
+                        self.counter_passworddb += 1
+                        if (self.counter_passworddb % 1000) == 0:
+                            self.logger.info("Database entry: " + str(data))
                     except DBIntegrityError as e:
                         self.logger.error(e)
         else:
