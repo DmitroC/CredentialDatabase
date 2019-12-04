@@ -1,6 +1,7 @@
 import os
 import string
 import logging
+import hashlib
 import threading
 from CredentialDatabase.dbhandler import DBHandler
 from CredentialDatabase.exceptions import DBIntegrityError
@@ -29,6 +30,10 @@ class BreachCompilation(DBHandler):
             raise FileNotFoundError
 
         self.data_folder = os.path.join(self.breachcompilation_path, 'data')
+        self.counter = dict()
+        for i in self.chars:
+            self.counter.update({i: 1})
+        self.counter_sym = 1
 
     def start_iteration(self):
         """ starts the iteration worker threads
@@ -127,7 +132,7 @@ class BreachCompilation(DBHandler):
 
         else:
             cred_list_length = len(cred_list)
-            self.logger.error("len: " + str(cred_list_length) + ": " + str(cred_list))
+            self.logger.error("array length  " + str(cred_list_length) + ": " + str(cred_list))
 
     def prepare_credentials(self, email, password):
         """ insert credentials in database
@@ -138,49 +143,34 @@ class BreachCompilation(DBHandler):
         divide_email = email.split('@')
 
         if len(divide_email) == 2:
-            username = divide_email[0]
-            provider = divide_email[1]
-            #sha1, sha256, sha512, md5 = generate_hashes(password)
-
             if self.password_db:
                 self.insert_data_in_db(email=None, password=password)
             else:
                 # insert in database
-                #self.insert_data_in_db(email, password, username, provider, sha1, sha256, sha512, md5)
-                pass
+                username = divide_email[0]
+                provider = divide_email[1]
+                sha1, sha256, sha512, md5 = self.generate_hashes(password)
+                self.insert_data_in_db(email, password, username, provider, sha1, sha256, sha512, md5)
+
         else:
             self.logger.error("not_an_email: " + str(divide_email))
 
-    def is_number(self, password):
-        """ checks if the password contains a number
+    def insert_data_in_db(self, email, password, username=None, provider=None, sha1=None, sha256=None, sha512=None, md5=None):
+        """ inserts data from the breachcompilation collection into the database
 
-        :param password: string
-        :return: True of False
-        """
-        return any(char.isdigit() for char in password)
+        :param email: email string
+        :param password: password string
+        :param username: username from email
+        :param provider: provider from email
+        :param sha1: sha1 hash
+        :param sha256: sha256 hash
+        :param sha512: sha512 hash
+        :param md5: md5 hash
 
-    def is_symbol(self, password):
-        """ checks if the password contains a symbol
-
-        :param password: string
-        :return: True or False
-        """
-
-        spec_char = [char for char in password if char not in self.all_normal_char]
-        if len(spec_char) > 0:
-            return True
-        else:
-            return False
-
-    def insert_data_in_db(self, email, password):
-        """
-
-        :param email:
-        :param password:
-        :return:
         """
 
         if email is None:
+            # PasswordDatabase
             if len(password) > 1:
                 first_char_password = password[0].lower()
                 second_char_password = password[1].lower()
@@ -209,6 +199,82 @@ class BreachCompilation(DBHandler):
                     except DBIntegrityError as e:
                         self.logger.error(e)
                         pass
+        else:
+            # BreachCompilationDatabase
+            if len(email) > 1:
+                first_char_email = email[0].lower()
+                second_char_email = email[1].lower()
+
+                if (first_char_email in self.chars) and (second_char_email in self.chars):
+                    data = (self.counter[first_char_email], str(email), str(password), str(username), str(provider), str(sha1), str(sha256), str(sha512), str(md5))
+                    try:
+                        query_str = "insert into \"{}\".\"{}\"(id, email, password, username, provider, sha1, sha256, sha512, md5) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)".format(first_char_email, second_char_email)
+                        self.dbinserter.row(sql=query_str, data=data, autocommit=True)
+                        self.counter[first_char_email] += 1
+
+                        if (self.counter[first_char_email] % 1000) == 0:
+                            self.logger.info("Database entry: " + str(data))
+
+                    except DBIntegrityError as e:
+                        #self.counter[first_char_email] += 1
+                        self.logger.error(e)
+
+                    except Exception as e:
+                        # save data which are not inserted
+                        self.logger.error(e)
+                else:
+                    # handle symbols
+                    data = (self.counter_sym, str(email), str(password), str(username), str(provider), str(sha1), str(sha256), str(sha512), str(md5))
+
+                    try:
+                        query_str = "insert into symbols.symbols(id, email, password, username, provider, sha1, sha256, sha512, md5) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                        self.dbinserter.row(sql=query_str, data=data, autocommit=True)
+                        self.counter_sym += 1
+
+                        if (self.counter_sym % 1000) == 0:
+                            self.logger.info("Database entry: " + str(data))
+
+                    except DBIntegrityError as e:
+                        #self.counter[first_char_email] += 1
+                        self.logger.error(e)
+
+                    except Exception as e:
+                        # save data which are not inserted
+                        self.logger.error(e)
+
+    def generate_hashes(self, password):
+        """ generates the hash of given password string
+
+        :param password: password string
+        :return: sh1, sh256, sha512, md5
+        """
+        sha1 = hashlib.sha1(password.encode()).hexdigest()      # 40
+        sha256 = hashlib.sha256(password.encode()).hexdigest()  # 64
+        sha512 = hashlib.sha512(password.encode()).hexdigest()  # 128
+        md5 = hashlib.md5(password.encode()).hexdigest()        # 32
+
+        return sha1, sha256, sha512, md5
+
+    def is_number(self, password):
+        """ checks if the password contains a number
+
+        :param password: string
+        :return: True of False
+        """
+        return any(char.isdigit() for char in password)
+
+    def is_symbol(self, password):
+        """ checks if the password contains a symbol
+
+        :param password: string
+        :return: True or False
+        """
+
+        spec_char = [char for char in password if char not in self.all_normal_char]
+        if len(spec_char) > 0:
+            return True
+        else:
+            return False
 
 
 if __name__ == '__main__':

@@ -1,4 +1,3 @@
-from psycopg2 import Error
 
 
 class DBConnectorError(ConnectionError):

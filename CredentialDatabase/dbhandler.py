@@ -28,7 +28,7 @@ class DBHandler:
             self.logger.error("no database params provided!")
 
         DBConnector.connect_psycopg(host=self.db_host, port=self.db_port, username=self.db_username,
-                                    password=self.db_password, dbname=self.db_name, minConn=1, maxConn=40)
+                                    password=self.db_password, dbname=self.db_name, minConn=1, maxConn=39)
 
         self.dbcreator = DBCreator()
         self.dbfetcher = DBFetcher()

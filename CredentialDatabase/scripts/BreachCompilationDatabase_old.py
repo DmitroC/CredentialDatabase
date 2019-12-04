@@ -269,11 +269,11 @@ def main():
     args = parser.parse_args()
 
     if (args.host and args.port and args.user and args.password and args.dbname and args.path) is None:
-        print("Wrong number of arguments. Use it like: ./BreachCompilationDatabase.py --host 192.168.1.2 --port 5432 --user "
+        print("Wrong number of arguments. Use it like: ./BreachCompilationDatabase_old.py --host 192.168.1.2 --port 5432 --user "
               "john --password test1234 --dbname credentials --schema breachcompilation --path /path/to/BreachCompilation")
         exit(1)
     else:
-        print("start script BreachCompilationDatabase.py")
+        print("start script BreachCompilationDatabase_old.py")
 
         # create loggers
         formate_logger()
