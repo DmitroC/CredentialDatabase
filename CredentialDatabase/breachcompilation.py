@@ -190,8 +190,8 @@ class BreachCompilation(DBHandler):
                         if (self.counter_passworddb % 1000) == 0:
                             self.logger.info("Database entry: " + str(data))
                     except DBIntegrityError as e:
-                        self.logger.error(e)
-
+                        #self.logger.error(e)
+                        pass
                 else:
                     # handle symbols
                     data = (password, length_password, isNumber, isSymbol)
@@ -202,7 +202,8 @@ class BreachCompilation(DBHandler):
                         if (self.counter_passworddb % 1000) == 0:
                             self.logger.info("Database entry: " + str(data))
                     except DBIntegrityError as e:
-                        self.logger.error(e)
+                        #self.logger.error(e)
+                        pass
         else:
             # BreachCompilationDatabase
             if len(email) > 1:
@@ -280,7 +281,3 @@ class BreachCompilation(DBHandler):
         else:
             return False
 
-
-if __name__ == '__main__':
-    breach = BreachCompilation(folder_path='/home/christian/projects/BreachCompilationRestAPI/BreachCompilation/')
-    breach.start_iteration()
