@@ -44,10 +44,12 @@ uninstall the package with pip
 pip3 uninstall CredentialDatabase
 </code></pre>
 
-or use the systemd service file
+insert subsequent command to run the scripts completely in background
 <pre><code>
-sudo systemctl status CredentialDatabase.service
+nohup BreachCompilationDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname breachcompilation --breachpath /path/to/BreachCompilation &>/dev/null &
 </code></pre>
+
+or use a tool like [screen](https://wiki.ubuntuusers.de/Screen/)
 
 
 ### BreachCompilationDatabase.py
@@ -172,6 +174,30 @@ finally insert the magnet link in the url field
   <img src="res/transmission_enter_magnet_url.png" alt="example" width="900" height="115">
 </div>
 
+## Database structure
 
+
+## Postgresql database settings
+
+
+## Logs
+
+logs can be found in `/var/log/CredentialDatabase`
+
+
+## Troubleshooting
+add your current user to group `syslog`, this allows the application/scripts to create a folder in
+`/var/log`. Replace `<user>` with your current user
+<pre><code>
+sudo adduser &lt;user&gt; syslog
+</code></pre>
+to apply this change, log out and log in again and check with the terminal command `groups`
+
+## Changelog
+All changes and versioning information can be found in the [CHANGELOG](https://github.com/bierschi/CredentialDatabase/blob/master/CHANGELOG.rst)
+
+## License
+Copyright (c) 2019 Bierschneider Christian. See [LICENSE](https://github.com/bierschi/CredentialDatabase/blob/master/LICENSE)
+for details
 
 
