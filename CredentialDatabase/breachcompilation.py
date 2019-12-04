@@ -181,24 +181,23 @@ class BreachCompilation(DBHandler):
 
                 if (first_char_password in self.chars) and (second_char_password in self.chars):
                     data = (password, length_password, isNumber, isSymbol)
-                    self.logger.info(data)
                     query_str = "insert into \"{}\".\"{}\"(password, length, isnumber, issymbol) VALUES (%s, %s, %s, %s)".format(
                         first_char_password, second_char_password)
                     try:
                         self.dbinserter.row(sql=query_str, data=data, autocommit=True)
+                        self.logger.info("Database entry: " + str(data))
                     except DBIntegrityError as e:
                         self.logger.error(e)
-                        pass
+
                 else:
                     # handle symbols
                     data = (password, length_password, isNumber, isSymbol)
-                    self.logger.info(data)
                     query_str = "insert into symbols.symbols(password, length, isnumber, issymbol) VALUES (%s, %s, %s, %s)"
                     try:
                         self.dbinserter.row(sql=query_str, data=data, autocommit=True)
+                        self.logger.info("Database entry: " + str(data))
                     except DBIntegrityError as e:
                         self.logger.error(e)
-                        pass
         else:
             # BreachCompilationDatabase
             if len(email) > 1:

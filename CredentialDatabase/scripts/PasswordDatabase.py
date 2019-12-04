@@ -37,11 +37,11 @@ def main():
     args = parser.parse_args()
 
     if (args.host and args.port and args.user and args.password and args.dbname and args.breachpath) is None:
-        print("Wrong number of arguments. Use it like: ./PasswordDatabase.py --host 192.168.1.2 --port 5432 --user "
+        print("Wrong number of arguments. Use it like: PasswordDatabase --host 192.168.1.2 --port 5432 --user "
               "john --password test1234 --dbname credentials --breachpath /path/to/BreachCompilation")
         exit(1)
     else:
-        print("start script PasswordDatabase.py")
+        print("start script PasswordDatabase")
         host = args.host
         port = args.port
         username = args.user
@@ -52,11 +52,11 @@ def main():
 
         # set up logger instance
         logger = Logger(name='CredentialDatabase', level='info', log_folder='/var/log/')
-        logger.info("start script PasswordDatabase.py")
+        logger.info("start script PasswordDatabase")
 
         password = PasswordDatabase(breachpath=breachpath, **dbparams)
 
-        print("finished script PasswordDatabase.py")
+        print("finished script PasswordDatabase")
 
 
 if __name__ == '__main__':
