@@ -57,10 +57,16 @@ nohup BreachCompilationDatabase --host 192.168.1.2 --port 5432 --user john --pas
 </code></pre>
 or use a tool like [screen](https://wiki.ubuntuusers.de/Screen/)
 
-Database structure:
+Database structure: <br>
+**schemas**: 0-9 a-z (first character from email) <br>
+**tables**:  0-9 a-z (second character from email)
+
 <pre><code>
 id | email | password | username | provider | sh1 | sh256 | sh512 | md5 
 </code></pre>
+
+- script runtime about 8 days
+- needs disk space for about 569 GB 
 
 ### PasswordDatabase.py 
 
@@ -75,7 +81,10 @@ nohup PasswordDatabase --host 192.168.1.2 --port 5432 --user john --password tes
 </code></pre>
 or use a tool like [screen](https://wiki.ubuntuusers.de/Screen/)
 
-Database structure:
+Database structure: <br>
+**schemas**: 0-9 a-z (first character from password) <br>
+**tables**:  0-9 a-z (second character from password)
+
 <pre><code>
 password | length | isnumber | issymbol 
 </code></pre>
@@ -183,6 +192,35 @@ finally insert the magnet link in the url field
 
 ## Postgresql database settings
 
+install PostgreSQL dependencies via apt
+
+<pre><code>
+sudo apt-get install postgresql libpq-dev postgresql-client postgresql-client-common
+</code></pre>
+
+Follow this [tutorial](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04) to set up a 
+postgresql environment. For graphical visualization install [pgAdmin4](https://www.pgadmin.org/download/).
+<br>
+
+### Postgresql advanced
+
+create an index only scan for columns `email` and `password`
+<pre><code>
+CREATE index idx_pass_email on "a"."d"(email, password);
+</code></pre>
+
+vacuum the table, so that the visibility map to be up-to-date
+<pre><code>
+VACUUM "a"."d";
+</code></pre>
+
+Delete a table completely with
+<pre><code>
+drop table "a"."d" cascade
+</code></pre>
+
+
+Settings for tuning your postgresql server are [here](http://wiki.postgresql.org/wiki/Tuning_Your_PostgreSQL_Server)
 
 ## Logs
 
