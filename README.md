@@ -184,7 +184,7 @@ http://server-ip:9091/transmission/web/
 finally insert the magnet link in the url field
 <div align="left">
   <br>
-  <img src="res/transmission_enter_magnet_url.png" alt="example" width="900" height="115">
+  <img src="assets/transmission_enter_magnet_url.png" alt="example" width="900" height="115">
 </div>
 
 ## Database structure
@@ -225,6 +225,11 @@ Settings for tuning your postgresql server are [here](http://wiki.postgresql.org
 ## Logs
 
 logs can be found in `/var/log/CredentialDatabase`
+
+## Collections
+
+- BreachCompilation
+- breachcompilation.txt
 
 
 ## Troubleshooting

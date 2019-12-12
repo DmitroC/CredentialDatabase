@@ -1,4 +1,5 @@
 import logging
+import threading
 from CredentialDatabase.db.connector import DBConnector
 from CredentialDatabase.db.creator import DBCreator
 from CredentialDatabase.db.fetcher import DBFetcher
@@ -34,32 +35,63 @@ class DBHandler:
         self.dbfetcher = DBFetcher()
         self.dbinserter = DBInserter()
 
-        self.structure = '0123456789abcdefghijklmnopqrstuvwxyz'
+        # database schema structure
+        self.dbstructure = '0123456789abcdefghijklmnopqrstuvwxyz'
+        self.schema_list = list(self.dbstructure)
+        self.schema_list.append('symbols')
 
-    def create_schemas_and_tables(self):
+        self.threads = []
+
+    def create_schemas_and_tables(self, remove=False):
         """ creates schemas and tables in database
 
         """
         self.logger.info("create schemas and tables in database")
-        schema_list = list(self.structure)
-        schema_list.append('symbols')
+        # start threads
+        for schema in self.schema_list:
+            if remove:
+                thread = threading.Thread(target=self.remove_schema_worker, args=(schema,))
+            else:
+                thread = threading.Thread(target=self.schema_worker, args=(schema,))
+            self.threads.append(thread)
+            thread.start()
 
-        for schema in schema_list:
-            self.logger.info("create schema {}".format(schema))
-            schema_sql = "create schema if not exists \"{}\"".format(schema)
-            self.dbinserter.sql(sql=schema_sql)
+        for t in self.threads:
+            t.join()
 
-            if schema == 'symbols':
+    def schema_worker(self, schema):
+        """
+
+        :param schema:
+        :return:
+        """
+        self.logger.info("create schema {}".format(schema))
+        schema_sql = "create schema if not exists \"{}\"".format(schema)
+        self.dbinserter.sql(sql=schema_sql)
+
+        if schema == 'symbols':
+            if self.password_db:
+                table_sql = "create table if not exists \"{}\".symbols (password text primary key, length bigint, isNumber boolean, isSymbol boolean);".format(
+                    schema)
+            else:
+                table_sql = "create table if not exists \"{}\".symbols (id bigint primary key, email text, password text, username text, provider text, sha1 varchar(40), sha256 varchar(64), sha512 varchar(128), md5 varchar(32));".format(
+                    schema)
+            self.dbinserter.sql(sql=table_sql)
+        else:
+            for table in self.schema_list:
                 if self.password_db:
-                    table_sql = "create table if not exists \"{}\".symbols (password text primary key, length bigint, isNumber boolean, isSymbol boolean);".format(schema)
+                    table_sql = "create table if not exists \"{}\".\"{}\" (password text primary key, length bigint, isNumber boolean, isSymbol boolean);".format(
+                        schema, table)
                 else:
-                    table_sql = "create table if not exists \"{}\".symbols (id bigint primary key, email text, password text, username text, provider text, sha1 varchar(40), sha256 varchar(64), sha512 varchar(128), md5 varchar(32));".format(schema)
+                    table_sql = "create table if not exists \"{}\".\"{}\" (id bigint primary key, email text, password text, username text, provider text, sha1 varchar(40), sha256 varchar(64), sha512 varchar(128), md5 varchar(32));".format(
+                        schema, table)
                 self.dbinserter.sql(sql=table_sql)
 
-            else:
-                for table in schema_list:
-                    if self.password_db:
-                        table_sql = "create table if not exists \"{}\".\"{}\" (password text primary key, length bigint, isNumber boolean, isSymbol boolean);".format(schema, table)
-                    else:
-                        table_sql = "create table if not exists \"{}\".\"{}\" (id bigint primary key, email text, password text, username text, provider text, sha1 varchar(40), sha256 varchar(64), sha512 varchar(128), md5 varchar(32));".format(schema, table)
-                    self.dbinserter.sql(sql=table_sql)
+    def remove_schema_worker(self, schema):
+        """
+
+        :return:
+        """
+        self.logger.info("remove schema {}".format(schema))
+        drop_schema_sql = "drop schema \"{}\" cascade".format(schema)
+        self.dbinserter.sql(sql=drop_schema_sql)
