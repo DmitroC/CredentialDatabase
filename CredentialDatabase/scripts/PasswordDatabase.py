@@ -30,10 +30,14 @@ class PasswordDatabase:
             breach.start_iteration()
         else:
             print("credfile")
-            credfile = CredentialFile(filepath='/home/christian/projects/CredentialDatabase/Collections/rockyou.txt', **self.dbparams)
+            import time
+            start = time.time()
+            credfile = CredentialFile(file=path, **self.dbparams)
             credfile.create_schemas_and_tables()
-            credfile.start_iteration()
-
+            credfile.one_thread_read_file()
+            end = time.time()
+            print("\n")
+            print(end-start)
 
 def main():
 

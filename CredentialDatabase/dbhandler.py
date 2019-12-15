@@ -60,10 +60,9 @@ class DBHandler:
             t.join()
 
     def schema_worker(self, schema):
-        """
+        """ worker to create the schemas and tables in the database
 
-        :param schema:
-        :return:
+        :param schema: specific schema
         """
         self.logger.info("create schema {}".format(schema))
         schema_sql = "create schema if not exists \"{}\"".format(schema)
@@ -88,9 +87,8 @@ class DBHandler:
                 self.dbinserter.sql(sql=table_sql)
 
     def remove_schema_worker(self, schema):
-        """
+        """ worker to remove the schemas and tables in the database
 
-        :return:
         """
         self.logger.info("remove schema {}".format(schema))
         drop_schema_sql = "drop schema \"{}\" cascade".format(schema)

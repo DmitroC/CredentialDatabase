@@ -1,10 +1,11 @@
 import os
 import string
 import logging
-import hashlib
 import threading
+
 from CredentialDatabase.dbhandler import DBHandler
 from CredentialDatabase.exceptions import DBIntegrityError
+from CredentialDatabase.utils.password import Password
 
 
 class BreachCompilation(DBHandler):
@@ -21,8 +22,10 @@ class BreachCompilation(DBHandler):
         # init base class
         super().__init__(password_db, **dbparams)
 
+        # instances
+        self.password = Password()
+
         self.chars = set('0123456789abcdefghijklmnopqrstuvwxyz')
-        self.all_normal_char = string.ascii_letters + string.digits
 
         self.breachcompilation_path = folder_path
         if 'data' not in os.listdir(self.breachcompilation_path):
@@ -150,7 +153,7 @@ class BreachCompilation(DBHandler):
                 # insert in database
                 username = divide_email[0]
                 provider = divide_email[1]
-                sha1, sha256, sha512, md5 = self.generate_hashes(password)
+                sha1, sha256, sha512, md5 = self.password.generate_hashes(password=password)
                 self.insert_data_in_db(email, password, username, provider, sha1, sha256, sha512, md5)
 
         else:
@@ -177,8 +180,8 @@ class BreachCompilation(DBHandler):
                 second_char_password = password[1].lower()
 
                 length_password = len(password)
-                isNumber = self.is_number(password)
-                isSymbol = self.is_symbol(password)
+                isNumber = self.password.is_number(password=password)
+                isSymbol = self.password.is_symbol(password=password)
 
                 if (first_char_password in self.chars) and (second_char_password in self.chars):
                     data = (password, length_password, isNumber, isSymbol)
@@ -247,37 +250,4 @@ class BreachCompilation(DBHandler):
                         # save data which are not inserted
                         self.logger.error(e)
 
-    def generate_hashes(self, password):
-        """ generates the hash of given password string
-
-        :param password: password string
-        :return: sh1, sh256, sha512, md5
-        """
-        sha1 = hashlib.sha1(password.encode()).hexdigest()      # 40
-        sha256 = hashlib.sha256(password.encode()).hexdigest()  # 64
-        sha512 = hashlib.sha512(password.encode()).hexdigest()  # 128
-        md5 = hashlib.md5(password.encode()).hexdigest()        # 32
-
-        return sha1, sha256, sha512, md5
-
-    def is_number(self, password):
-        """ checks if the password contains a number
-
-        :param password: string
-        :return: True of False
-        """
-        return any(char.isdigit() for char in password)
-
-    def is_symbol(self, password):
-        """ checks if the password contains a symbol
-
-        :param password: string
-        :return: True or False
-        """
-
-        spec_char = [char for char in password if char not in self.all_normal_char]
-        if len(spec_char) > 0:
-            return True
-        else:
-            return False
 

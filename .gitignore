@@ -106,6 +106,8 @@ venv.bak/
 #project
 .idea/
 CredentialDatabase/config/cfg.ini
+CredentialDatabase/scripts/BreachCompilationDatabase_old.py
+
 # collections
 BreachCompilation/
 Collections/
