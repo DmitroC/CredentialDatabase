@@ -32,9 +32,9 @@ class PasswordDatabase:
             print("credfile")
             import time
             start = time.time()
-            credfile = CredentialFile(file=path, **self.dbparams)
-            credfile.create_schemas_and_tables()
-            credfile.one_thread_read_file()
+            credfile = CredentialFile(filepath=path, **self.dbparams)
+            #credfile.create_schemas_and_tables()
+            credfile.process_file()
             end = time.time()
             print("\n")
             print(end-start)

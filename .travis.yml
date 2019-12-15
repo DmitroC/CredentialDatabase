@@ -1,0 +1,43 @@
+sudo: required
+language: python
+python:
+  - "3.5"
+  - "3.6"   # development interpreter
+  - "3.7"
+
+branches:
+  only:
+    - master
+
+install:
+  # install build dependencies
+  - sudo apt-get install python3-setuptools
+  - pip install --upgrade pip
+  - pip install wheel
+
+  #install application dependencies
+  - pip install -r requirements.txt
+
+  # install python package
+  - python setup.py bdist_wheel
+
+# use postgresql version 10
+addons:
+  postgresql: "10"
+  apt:
+    packages:
+    - postgresql-10
+    - postgresql-client-10
+env:
+  global:
+  - PGPORT=5433
+
+#services:
+#  - postgresql
+
+#before_script:
+#  - psql -c 'create database postgres;' -U postgres
+
+# test cases with verbose output
+script:
+  - python3 -m unittest discover CredentialDatabase/test/ -v

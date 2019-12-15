@@ -53,6 +53,7 @@ class DBInserter(DBConnector):
                 cursor.execute(sql, data)
             except Error as e:
                 if e.pgcode == '23505':
+
                     raise DBIntegrityError(e)
 
     def many_rows(self, sql, datas, autocommit=False):

@@ -1,7 +1,6 @@
 import logging
 from itertools import islice
-from multiprocessing import Pool
-
+from multiprocessing import Pool, Process
 from CredentialDatabase.utils.password import Password
 from CredentialDatabase.dbhandler import DBHandler
 from CredentialDatabase.db.inserter import DBInserter
@@ -15,6 +14,7 @@ class CredentialFile(DBHandler):
             credentialfile = CredentialFile(filepath=/tmp/example.txt, password_db=True, **dbparams)
 
     """
+
     def __init__(self, filepath, password_db=True, **dbparams):
         self.logger = logging.getLogger('CredentialDatabase')
         self.logger.info('create class CredentialFile')
@@ -29,10 +29,10 @@ class CredentialFile(DBHandler):
         self.filepath = filepath
         self.counter_passworddb = 1
         self.chars = set('0123456789abcdefghijklmnopqrstuvwxyz')
-
+        self.pool = Pool(processes=4)
         # pool processes
         self.processes = 4
-        self.filelines_divider = 1000000
+        self.filelines_divider = 5000000
 
     def start_iteration(self):
         """
@@ -86,9 +86,9 @@ class CredentialFile(DBHandler):
 
         """
         num_lines = self.get_lines_from_file()
-        pool = Pool(processes=self.processes)
-
         end = 0
+        self.logger.info("start Process")
+        process = []
         while end < num_lines:
             if end == 0:
                 start = 0
@@ -96,9 +96,13 @@ class CredentialFile(DBHandler):
             else:
                 start = end + 1
                 end = start + (self.filelines_divider - 1)
-            pool.apply_async(self.process_lines, args=(start, end))
-        pool.close()
-        pool.join()
+            proc = Process(target=self.process_lines, args=(start, end, ))
+            process.append(proc)
+            proc.start()
+            #self.pool.apply_async(self.process_lines, args=(self.filepath, start, end), callback=self.test)
+
+        for proc in process:
+            proc.join()
 
     def get_lines_from_file(self):
         """ get the line number from the given filepath
@@ -116,12 +120,14 @@ class CredentialFile(DBHandler):
         :param start: start number of line
         :param end: end number of line
         """
+        self.logger.info("process lines")
         with open(self.filepath, mode='rb') as file:
             for line in islice(file, start, end):
                 try:
                     line = line.decode('utf-8').strip('\n')
                 except UnicodeDecodeError as e:
                     line = line.decode('latin-1').strip('\n')
+                #print(line)
                 self.insert_password_db(password=line)
 
 
@@ -129,6 +135,6 @@ if __name__ == '__main__':
     import time
     start = time.time()
     credfile = CredentialFile('/home/christian/projects/CredentialDatabase/Collections/rockyou.txt')
-    credfile.multiple_thread_read_file()
+    credfile.process_file()
     end = time.time()
     print(end - start)
