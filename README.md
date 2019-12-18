@@ -1,7 +1,7 @@
 ## CredentialDatabase
 [![Build Status](https://travis-ci.org/bierschi/CredentialDatabase.png?branch=master)](https://travis-ci.org/bierschi/CredentialDatabase) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-Create a massive credential database with collections like **BreachCompilation** or extract credentials
+Create a massive credential database with collections like **BreachCompilation** or with credentials
 from password files
 
 **Features** of CredentialDatabase:
@@ -17,9 +17,13 @@ from password files
 
 ## Content 
 
-- [CredentialDatabase](https://github.com/bierschi/CredentialDatabase#usage-and-installation)
-- [BreachCompilation structure and usage](https://github.com/bierschi/CredentialDatabase#breachcompilation-structure-and-usage)
-- [Download BreachCompilation via transmission software](https://github.com/bierschi/CredentialDatabase#download-breachcompilation-via-transmission-software)
+- [Installation](https://github.com/bierschi/CredentialDatabase#usage-and-installation)
+- [Usage and Examples](https://github.com/bierschi/CredentialDatabase#usage-and-installation)
+- [Postgresql Database Settings](https://github.com/bierschi/CredentialDatabase#postgresql-database-settings)
+- [Logs](https://github.com/bierschi/CredentialDatabase#logs)
+- [Troubleshooting](https://github.com/bierschi/CredentialDatabase#troubleshooting)
+- [Changelog](https://github.com/bierschi/CredentialDatabase#changelog)
+- [License](https://github.com/bierschi/CredentialDatabase#license)
 
 <br>
 
@@ -47,6 +51,7 @@ pip3 uninstall CredentialDatabase
 
 ### Usage and Examples
 
+
 #### BreachCompilationDatabase.py
 
 execute the console script `BreachCompilationDatabase`
@@ -61,8 +66,8 @@ nohup BreachCompilationDatabase --host 192.168.1.2 --port 5432 --user john --pas
 or use a tool like [screen](https://wiki.ubuntuusers.de/Screen/)
 
 Database structure: <br>
-**schemas**: 0-9 a-z (first character from email) <br>
-**tables**:  0-9 a-z (second character from email)
+**schemas**: 0-9, a-z, symbols (first character from email) <br>
+**tables**:  0-9, a-z, symbols (second character from email)
 
 <pre><code>
 id | email | password | username | provider | sh1 | sh256 | sh512 | md5 
@@ -89,18 +94,15 @@ nohup PasswordDatabase --host 192.168.1.2 --port 5432 --user john --password tes
 or use a tool like [screen](https://wiki.ubuntuusers.de/Screen/)
 
 Database structure: <br>
-**schemas**: 0-9 a-z (first character from password) <br>
-**tables**:  0-9 a-z (second character from password)
+**schemas**: 0-9, a-z, symbols (first character from password) <br>
+**tables**:  0-9, a-z, symbols (second character from password)
 
 <pre><code>
 password | length | isnumber | issymbol | ts
 </code></pre>
 
 
-## Database structure
-
-
-## Postgresql database settings
+## Postgresql Database Settings
 
 install PostgreSQL dependencies via apt
 
@@ -112,7 +114,7 @@ Follow this [tutorial](https://www.digitalocean.com/community/tutorials/how-to-i
 postgresql environment. For graphical visualization install [pgAdmin4](https://www.pgadmin.org/download/).
 <br>
 
-### Postgresql advanced
+### Postgresql Advanced
 
 create an index only scan for columns `email` and `password`
 <pre><code>
