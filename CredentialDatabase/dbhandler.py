@@ -4,6 +4,8 @@ from CredentialDatabase.db.connector import DBConnector
 from CredentialDatabase.db.creator import DBCreator
 from CredentialDatabase.db.fetcher import DBFetcher
 from CredentialDatabase.db.inserter import DBInserter
+from CredentialDatabase.utils.password import Password
+from CredentialDatabase.exceptions import DBIntegrityError
 
 
 class DBHandler:
@@ -13,7 +15,7 @@ class DBHandler:
             dbhandler = DBHandler()
 
     """
-    def __init__(self, password_db, **dbparams):
+    def __init__(self, password_db, db_entries_logger=1000, **dbparams):
         self.logger = logging.getLogger('CredentialDatabase')
         self.logger.info('create class DBHandler')
 
@@ -31,15 +33,28 @@ class DBHandler:
         DBConnector.connect_psycopg(host=self.db_host, port=self.db_port, username=self.db_username,
                                     password=self.db_password, dbname=self.db_name, minConn=1, maxConn=39)
 
+        # database instances
         self.dbcreator = DBCreator()
         self.dbfetcher = DBFetcher()
         self.dbinserter = DBInserter()
+
+        # instances
+        self.password = Password()
 
         # database schema structure
         self.dbstructure = '0123456789abcdefghijklmnopqrstuvwxyz'
         self.schema_list = list(self.dbstructure)
         self.schema_list.append('symbols')
+        self.counter_passworddb = 1
+        self.chars = set('0123456789abcdefghijklmnopqrstuvwxyz')
+        self.db_entries_logger = db_entries_logger
 
+        self.counter = dict()
+        for i in self.chars:
+            self.counter.update({i: 1})
+        self.counter_sym = 1
+
+        # threads
         self.threads = []
 
     def create_schemas_and_tables(self, remove=False):
@@ -93,3 +108,102 @@ class DBHandler:
         self.logger.info("remove schema {}".format(schema))
         drop_schema_sql = "drop schema \"{}\" cascade".format(schema)
         self.dbinserter.sql(sql=drop_schema_sql)
+
+    def insert_password_db(self, password):
+        """ inserts password string into database table
+
+        :param password: password string
+        """
+
+        if len(password) > 1:
+            first_char_password = password[0].lower()
+            second_char_password = password[1].lower()
+
+            length_password = len(password)
+            isSymbol = self.password.is_symbol(password)
+            isNumber = self.password.is_number(password)
+
+            if (first_char_password in self.chars) and (second_char_password in self.chars):
+                data = (password, length_password, isNumber, isSymbol)
+                query_str = "insert into \"{}\".\"{}\"(password, length, isnumber, issymbol) VALUES (%s, %s, %s, %s)".format(
+                    first_char_password, second_char_password)
+                try:
+                    self.dbinserter.row(sql=query_str, data=data, autocommit=True)
+                    self.counter_passworddb += 1
+                    if (self.counter_passworddb % self.db_entries_logger) == 0:
+                        self.logger.info("Database entry {}: {}".format(self.counter_passworddb, str(data)))
+                except DBIntegrityError as e:
+                    # self.logger.error(e)
+                    pass
+            else:
+                # handle symbols
+                data = (password, length_password, isNumber, isSymbol)
+                query_str = "insert into symbols.symbols(password, length, isnumber, issymbol) VALUES (%s, %s, %s, %s)"
+                try:
+                    self.dbinserter.row(sql=query_str, data=data, autocommit=True)
+                    self.counter_passworddb += 1
+                    if (self.counter_passworddb % self.db_entries_logger) == 0:
+                        self.logger.info("Database entry {}: {}".format(self.counter_passworddb, str(data)))
+                except DBIntegrityError as e:
+                    # self.logger.error(e)
+                    pass
+        else:
+            # password to short
+            self.logger.error("password to short for this database structure: {}".format(password))
+
+    def insert_breach_db(self, email, password, username, provider):
+        """ inserts data from the breachcompilation collection into the database
+
+        :param email: email string
+        :param password: password string
+        :param username: username from email
+        :param provider: provider from email
+        :param sha1: sha1 hash
+        :param sha256: sha256 hash
+        :param sha512: sha512 hash
+        :param md5: md5 hash
+
+        """
+        if len(email) > 1:
+            first_char_email = email[0].lower()
+            second_char_email = email[1].lower()
+            sha1, sha256, sha512, md5 = self.password.generate_hashes(password=password)
+
+            if (first_char_email in self.chars) and (second_char_email in self.chars):
+                data = (self.counter[first_char_email], str(email), str(password), str(username), str(provider), str(sha1), str(sha256), str(sha512), str(md5))
+                try:
+                    query_str = "insert into \"{}\".\"{}\"(id, email, password, username, provider, sha1, sha256, sha512, md5) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)".format(first_char_email, second_char_email)
+                    self.dbinserter.row(sql=query_str, data=data, autocommit=True)
+                    self.counter[first_char_email] += 1
+
+                    if (self.counter[first_char_email] % self.db_entries_logger) == 0:
+                        self.logger.info("Database entry {}: {}".format(self.counter[first_char_email], str(data)))
+
+                except DBIntegrityError as e:
+                    #self.counter[first_char_email] += 1
+                    self.logger.error(e)
+
+                except Exception as e:
+                    # save data which are not inserted
+                    self.logger.error(e)
+            else:
+                # handle symbols
+                data = (self.counter_sym, str(email), str(password), str(username), str(provider), str(sha1), str(sha256), str(sha512), str(md5))
+
+                try:
+                    query_str = "insert into symbols.symbols(id, email, password, username, provider, sha1, sha256, sha512, md5) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                    self.dbinserter.row(sql=query_str, data=data, autocommit=True)
+                    self.counter_sym += 1
+
+                    if (self.counter_sym % self.db_entries_logger) == 0:
+                        self.logger.info("Database entry {}: {}".format(self.counter_sym, str(data)))
+
+                except DBIntegrityError as e:
+                    #self.counter[first_char_email] += 1
+                    self.logger.error(e)
+
+                except Exception as e:
+                    # save data which are not inserted
+                    self.logger.error(e)
+        else:
+            self.logger.error("email to short for this database structure: {}".format(email))

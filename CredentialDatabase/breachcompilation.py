@@ -1,11 +1,7 @@
 import os
-import string
 import logging
 import threading
-
 from CredentialDatabase.dbhandler import DBHandler
-from CredentialDatabase.exceptions import DBIntegrityError
-from CredentialDatabase.utils.password import Password
 
 
 class BreachCompilation(DBHandler):
@@ -22,22 +18,12 @@ class BreachCompilation(DBHandler):
         # init base class
         super().__init__(password_db, **dbparams)
 
-        # instances
-        self.password = Password()
-
-        self.chars = set('0123456789abcdefghijklmnopqrstuvwxyz')
-
         self.breachcompilation_path = folder_path
         if 'data' not in os.listdir(self.breachcompilation_path):
             self.logger.error("no 'data' directory in given BreachCompilation path")
             raise FileNotFoundError
 
         self.data_folder = os.path.join(self.breachcompilation_path, 'data')
-        self.counter = dict()
-        for i in self.chars:
-            self.counter.update({i: 1})
-        self.counter_sym = 1
-        self.counter_passworddb = 1
 
     def start_iteration(self):
         """ starts the iteration worker threads
@@ -57,7 +43,7 @@ class BreachCompilation(DBHandler):
     def iterate_data_dir(self, char_folder):
         """ iterates over the data dir in the breachcompilation collection
 
-        :param folder: path of the data folder
+        :param char_folder: folder path for the specific character
         """
 
         # check if it is a directory
@@ -148,106 +134,14 @@ class BreachCompilation(DBHandler):
 
         if len(divide_email) == 2:
             if self.password_db:
-                self.insert_data_in_db(email=None, password=password)
+                # insert in password database
+                self.insert_password_db(password=password)
             else:
-                # insert in database
+                # insert in breach database
                 username = divide_email[0]
                 provider = divide_email[1]
-                sha1, sha256, sha512, md5 = self.password.generate_hashes(password=password)
-                self.insert_data_in_db(email, password, username, provider, sha1, sha256, sha512, md5)
-
+                self.insert_breach_db(email, password, username, provider)
         else:
-            self.logger.error("not_an_email: " + str(divide_email))
-
-    def insert_data_in_db(self, email, password, username=None, provider=None, sha1=None, sha256=None, sha512=None, md5=None):
-        """ inserts data from the breachcompilation collection into the database
-
-        :param email: email string
-        :param password: password string
-        :param username: username from email
-        :param provider: provider from email
-        :param sha1: sha1 hash
-        :param sha256: sha256 hash
-        :param sha512: sha512 hash
-        :param md5: md5 hash
-
-        """
-
-        if email is None:
-            # PasswordDatabase
-            if len(password) > 1:
-                first_char_password = password[0].lower()
-                second_char_password = password[1].lower()
-
-                length_password = len(password)
-                isNumber = self.password.is_number(password=password)
-                isSymbol = self.password.is_symbol(password=password)
-
-                if (first_char_password in self.chars) and (second_char_password in self.chars):
-                    data = (password, length_password, isNumber, isSymbol)
-                    query_str = "insert into \"{}\".\"{}\"(password, length, isnumber, issymbol) VALUES (%s, %s, %s, %s)".format(
-                        first_char_password, second_char_password)
-                    try:
-                        self.dbinserter.row(sql=query_str, data=data, autocommit=True)
-                        self.counter_passworddb += 1
-                        if (self.counter_passworddb % 1000) == 0:
-                            self.logger.info("Database entry: " + str(data))
-                    except DBIntegrityError as e:
-                        #self.logger.error(e)
-                        pass
-                else:
-                    # handle symbols
-                    data = (password, length_password, isNumber, isSymbol)
-                    query_str = "insert into symbols.symbols(password, length, isnumber, issymbol) VALUES (%s, %s, %s, %s)"
-                    try:
-                        self.dbinserter.row(sql=query_str, data=data, autocommit=True)
-                        self.counter_passworddb += 1
-                        if (self.counter_passworddb % 1000) == 0:
-                            self.logger.info("Database entry: " + str(data))
-                    except DBIntegrityError as e:
-                        #self.logger.error(e)
-                        pass
-        else:
-            # BreachCompilationDatabase
-            if len(email) > 1:
-                first_char_email = email[0].lower()
-                second_char_email = email[1].lower()
-
-                if (first_char_email in self.chars) and (second_char_email in self.chars):
-                    data = (self.counter[first_char_email], str(email), str(password), str(username), str(provider), str(sha1), str(sha256), str(sha512), str(md5))
-                    try:
-                        query_str = "insert into \"{}\".\"{}\"(id, email, password, username, provider, sha1, sha256, sha512, md5) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)".format(first_char_email, second_char_email)
-                        self.dbinserter.row(sql=query_str, data=data, autocommit=True)
-                        self.counter[first_char_email] += 1
-
-                        if (self.counter[first_char_email] % 1000) == 0:
-                            self.logger.info("Database entry: " + str(data))
-
-                    except DBIntegrityError as e:
-                        #self.counter[first_char_email] += 1
-                        self.logger.error(e)
-
-                    except Exception as e:
-                        # save data which are not inserted
-                        self.logger.error(e)
-                else:
-                    # handle symbols
-                    data = (self.counter_sym, str(email), str(password), str(username), str(provider), str(sha1), str(sha256), str(sha512), str(md5))
-
-                    try:
-                        query_str = "insert into symbols.symbols(id, email, password, username, provider, sha1, sha256, sha512, md5) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                        self.dbinserter.row(sql=query_str, data=data, autocommit=True)
-                        self.counter_sym += 1
-
-                        if (self.counter_sym % 1000) == 0:
-                            self.logger.info("Database entry: " + str(data))
-
-                    except DBIntegrityError as e:
-                        #self.counter[first_char_email] += 1
-                        self.logger.error(e)
-
-                    except Exception as e:
-                        # save data which are not inserted
-                        self.logger.error(e)
+            self.logger.error("got wrong format of email: {}".format(str(divide_email)))
 
 

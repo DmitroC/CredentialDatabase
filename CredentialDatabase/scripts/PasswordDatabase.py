@@ -10,7 +10,7 @@ class PasswordDatabase:
     """ script PasswordDatabase to extract credentials from the BreachCompilation collection and insert it into the database
 
     USAGE:
-            passworddb = PasswordDatabase(breachpath=/tmp/, **dparams)
+            passworddb = PasswordDatabase(**dparams)
 
     """
     def __init__(self, **dbparams):
@@ -19,25 +19,24 @@ class PasswordDatabase:
 
         self.dbparams = dbparams
 
-    def start(self, path, breach=False):
-        """
+    def run(self, path, breach=False):
+        """ runs the password database script
 
-        :return:
         """
         if breach:
             breach = BreachCompilation(folder_path=path, password_db=True, **self.dbparams)
             breach.create_schemas_and_tables()
             breach.start_iteration()
         else:
-            print("credfile")
             import time
             start = time.time()
-            credfile = CredentialFile(filepath=path, **self.dbparams)
-            #credfile.create_schemas_and_tables()
-            credfile.process_file()
+            credfile = CredentialFile(filepath=path, password_db=True, lines_per_process=300000, **self.dbparams)
+            credfile.create_schemas_and_tables()
+            credfile.start_line_iteration()
             end = time.time()
             print("\n")
             print(end-start)
+
 
 def main():
 
@@ -78,11 +77,11 @@ def main():
 
         if (args.breachpath is not None) and (args.filepath is None):
             breachpath = args.breachpath
-            passworddb.start(path=breachpath, breach=True)
+            passworddb.run(path=breachpath, breach=True)
 
         elif (args.filepath is not None) and (args.breachpath is None):
             filepath = args.filepath
-            passworddb.start(path=filepath, breach=False)
+            passworddb.run(path=filepath, breach=False)
 
         else:
             print("please use either --breachpath or --filepath")
