@@ -1,4 +1,5 @@
 ## CredentialDatabase
+[![Build Status](https://travis-ci.org/bierschi/CredentialDatabase.png?branch=master)](https://travis-ci.org/bierschi/CredentialDatabase) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 Create a massive credential database with collections like **BreachCompilation** or extract credentials
 from password files
