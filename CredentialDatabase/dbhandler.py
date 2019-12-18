@@ -1,3 +1,4 @@
+import time
 import logging
 import threading
 from CredentialDatabase.db.connector import DBConnector
@@ -85,7 +86,7 @@ class DBHandler:
 
         if schema == 'symbols':
             if self.password_db:
-                table_sql = "create table if not exists \"{}\".symbols (password text primary key, length bigint, isNumber boolean, isSymbol boolean);".format(
+                table_sql = "create table if not exists \"{}\".symbols (password text primary key, length bigint, isNumber boolean, isSymbol boolean, ts text);".format(
                     schema)
             else:
                 table_sql = "create table if not exists \"{}\".symbols (id bigint primary key, email text, password text, username text, provider text, sha1 varchar(40), sha256 varchar(64), sha512 varchar(128), md5 varchar(32));".format(
@@ -94,7 +95,7 @@ class DBHandler:
         else:
             for table in self.schema_list:
                 if self.password_db:
-                    table_sql = "create table if not exists \"{}\".\"{}\" (password text primary key, length bigint, isNumber boolean, isSymbol boolean);".format(
+                    table_sql = "create table if not exists \"{}\".\"{}\" (password text primary key, length bigint, isNumber boolean, isSymbol boolean, ts text);".format(
                         schema, table)
                 else:
                     table_sql = "create table if not exists \"{}\".\"{}\" (id bigint primary key, email text, password text, username text, provider text, sha1 varchar(40), sha256 varchar(64), sha512 varchar(128), md5 varchar(32));".format(
@@ -122,10 +123,11 @@ class DBHandler:
             length_password = len(password)
             isSymbol = self.password.is_symbol(password)
             isNumber = self.password.is_number(password)
+            utc_ts = str(time.time()).split('.')[0]
 
             if (first_char_password in self.chars) and (second_char_password in self.chars):
-                data = (password, length_password, isNumber, isSymbol)
-                query_str = "insert into \"{}\".\"{}\"(password, length, isnumber, issymbol) VALUES (%s, %s, %s, %s)".format(
+                data = (password, length_password, isNumber, isSymbol, utc_ts)
+                query_str = "insert into \"{}\".\"{}\"(password, length, isnumber, issymbol, ts) VALUES (%s, %s, %s, %s, %s)".format(
                     first_char_password, second_char_password)
                 try:
                     self.dbinserter.row(sql=query_str, data=data, autocommit=True)
@@ -137,8 +139,8 @@ class DBHandler:
                     pass
             else:
                 # handle symbols
-                data = (password, length_password, isNumber, isSymbol)
-                query_str = "insert into symbols.symbols(password, length, isnumber, issymbol) VALUES (%s, %s, %s, %s)"
+                data = (password, length_password, isNumber, isSymbol, utc_ts)
+                query_str = "insert into symbols.symbols(password, length, isnumber, issymbol, ts) VALUES (%s, %s, %s, %s, %s)"
                 try:
                     self.dbinserter.row(sql=query_str, data=data, autocommit=True)
                     self.counter_passworddb += 1

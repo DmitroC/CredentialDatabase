@@ -30,7 +30,7 @@ class PasswordDatabase:
         else:
             import time
             start = time.time()
-            credfile = CredentialFile(filepath=path, password_db=True, lines_per_process=300000, **self.dbparams)
+            credfile = CredentialFile(filepath=path, password_db=True, num_proc=10, **self.dbparams)
             credfile.create_schemas_and_tables()
             credfile.start_line_iteration()
             end = time.time()

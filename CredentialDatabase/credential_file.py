@@ -12,7 +12,7 @@ class CredentialFile(DBHandler):
 
     """
 
-    def __init__(self, filepath, password_db=True, lines_per_process=50000, **dbparams):
+    def __init__(self, filepath, password_db=True, num_proc=10, **dbparams):
         self.logger = logging.getLogger('CredentialDatabase')
         self.logger.info('create class CredentialFile')
 
@@ -20,7 +20,14 @@ class CredentialFile(DBHandler):
         super().__init__(password_db=password_db, db_entries_logger=1000, **dbparams)
 
         self.filepath = filepath
-        self.lines_per_process = lines_per_process
+        self.num_proc = num_proc
+
+    def calc_lines_per_process(self, num_lines):
+        """ calculates the number of lines for each process
+
+        :return:
+        """
+        return round(num_lines / self.num_proc)
 
     def start_line_iteration(self):
         """ starts the line iteration
@@ -29,15 +36,18 @@ class CredentialFile(DBHandler):
         num_lines = self.get_lines_from_file()
         end = 0
         self.logger.info("start iteration with {} number of lines".format(num_lines))
-        process = []
+
         # calc lines per process
+        lines_per_process = self.calc_lines_per_process(num_lines)
+
+        process = []
         while end < num_lines:
             if end == 0:
                 start = 0
-                end = self.lines_per_process
+                end = lines_per_process
             else:
                 start = end + 1
-                end = start + (self.lines_per_process - 1)
+                end = start + (lines_per_process - 1)
             proc = Process(target=self.process_lines, args=(start, end,))
             process.append(proc)
             proc.start()
