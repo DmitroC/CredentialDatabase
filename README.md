@@ -50,7 +50,7 @@ pip3 uninstall CredentialDatabase
 </code></pre>
 
 ### Usage and Examples
-
+<br>
 
 #### BreachCompilationDatabase.py
 
@@ -65,7 +65,8 @@ nohup BreachCompilationDatabase --host 192.168.1.2 --port 5432 --user john --pas
 </code></pre>
 or use a tool like [screen](https://wiki.ubuntuusers.de/Screen/)
 
-Database structure: <br>
+#### Database structure
+
 **schemas**: 0-9, a-z, symbols (first character from email) <br>
 **tables**:  0-9, a-z, symbols (second character from email)
 
@@ -78,11 +79,11 @@ id | email | password | username | provider | sh1 | sh256 | sh512 | md5
 
 #### PasswordDatabase.py 
 
-execute the console script `PasswordDatabase`
+execute the console script `PasswordDatabase` with `--breachpath`
 <pre><code>
 PasswordDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname passwords --breachpath /path/to/BreachCompilation
 </code></pre>
-
+or with `--filepath`
 <pre><code>
 PasswordDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname passwords --filepath /path/to/CredentialFile
 </code></pre>
@@ -93,7 +94,8 @@ nohup PasswordDatabase --host 192.168.1.2 --port 5432 --user john --password tes
 </code></pre>
 or use a tool like [screen](https://wiki.ubuntuusers.de/Screen/)
 
-Database structure: <br>
+#### Database structure
+
 **schemas**: 0-9, a-z, symbols (first character from password) <br>
 **tables**:  0-9, a-z, symbols (second character from password)
 
