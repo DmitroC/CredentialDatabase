@@ -17,8 +17,8 @@ from password files
 
 ## Content 
 
-- [Installation](https://github.com/bierschi/CredentialDatabase#usage-and-installation)
-- [Usage and Examples](https://github.com/bierschi/CredentialDatabase#usage-and-installation)
+- [Installation](https://github.com/bierschi/CredentialDatabase#installation)
+- [Usage and Examples](https://github.com/bierschi/CredentialDatabase#usage-and-examples)
 - [Postgresql Database Settings](https://github.com/bierschi/CredentialDatabase#postgresql-database-settings)
 - [Logs](https://github.com/bierschi/CredentialDatabase#logs)
 - [Troubleshooting](https://github.com/bierschi/CredentialDatabase#troubleshooting)
