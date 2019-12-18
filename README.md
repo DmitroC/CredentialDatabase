@@ -50,7 +50,6 @@ pip3 uninstall CredentialDatabase
 </code></pre>
 
 ### Usage and Examples
-<br>
 
 #### BreachCompilationDatabase.py
 
