@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-from BreachCompilationRestAPI import __version__, __author__, __email__, __license__
+from CredentialDatabase import __version__, __author__, __email__, __license__
 
 with open('requirements.txt') as f:
     required = f.read().splitlines()
@@ -19,14 +19,14 @@ setup(
     license=__license__,
     author=__author__,
     author_email=__email__,
-    url="https://github.com/bierschi/BreachCompilationRestAPI",
+    url="https://github.com/bierschi/CredentialDatabase",
     packages=find_packages(),
     data_files=[
         ('/etc/systemd/system', ['service/CredentialDatabase.service'])
     ],
     package_data={'CredentialDatabase': ['config/*']},
     install_requires=required,
-    keywords=["BreachCompilation", "credentials", "leaked", "database", "CredentialDatabase"],
+    keywords=["PasswordDatabase", "BreachCompilation", "credentials", "leaked", "database", "CredentialDatabase"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
