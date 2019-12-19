@@ -33,7 +33,7 @@ class SQLite:
             cls.connection = sqlite3.connect(path, isolation_level=None)
 
         except sqlite3.DatabaseError as ex:
-            logging.getLogger('ComunioScore').error("Could not connect to SQLite Database: {}".format(ex))
+            logging.getLogger('CredentialDatabase').error("Could not connect to SQLite Database: {}".format(ex))
 
     def get_cursor(self):
         """ get a cursor object
