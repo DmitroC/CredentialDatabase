@@ -49,7 +49,6 @@ uninstall the package with pip
 pip3 uninstall CredentialDatabase
 </code></pre>
 
-
 ### Usage and Examples
 
 #### BreachCompilationDatabase.py
