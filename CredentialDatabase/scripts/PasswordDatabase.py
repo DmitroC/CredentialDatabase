@@ -27,6 +27,7 @@ class PasswordDatabase:
             breach = BreachCompilation(folder_path=path, password_db=True, **self.dbparams)
             breach.create_schemas_and_tables()
             breach.start_iteration()
+
         else:
             import time
             start = time.time()

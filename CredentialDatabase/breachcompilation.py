@@ -1,6 +1,7 @@
 import os
 import logging
 import threading
+from multiprocessing import Process
 from CredentialDatabase.dbhandler import DBHandler
 
 
@@ -11,7 +12,7 @@ class BreachCompilation(DBHandler):
             breachcompilation = BreachCompilation()
 
     """
-    def __init__(self, folder_path, password_db=False, **dbparams):
+    def __init__(self, folder_path, password_db=False, error_logs=False, **dbparams):
         self.logger = logging.getLogger('CredentialDatabase')
         self.logger.info('create class BreachCompilation')
 
@@ -24,8 +25,24 @@ class BreachCompilation(DBHandler):
             raise FileNotFoundError
 
         self.data_folder = os.path.join(self.breachcompilation_path, 'data')
+        self.error_logs = error_logs
 
     def start_iteration(self):
+        """ starts the iteration worker processes
+
+        """
+        process = []
+        for i, root_dir in enumerate(sorted(os.listdir(self.data_folder))):
+            root_dir_abs = os.path.join(self.data_folder, root_dir)  # absolute path
+            # start for each character folder one process
+            proc = Process(target=self.iterate_data_dir, args=(root_dir_abs, ))
+            process.append(proc)
+            proc.start()
+
+        for p in process:
+            p.join()
+
+    def start_thread_iteration(self):
         """ starts the iteration worker threads
 
         """
@@ -122,7 +139,8 @@ class BreachCompilation(DBHandler):
 
         else:
             cred_list_length = len(cred_list)
-            self.logger.error("array length  " + str(cred_list_length) + ": " + str(cred_list))
+            if self.error_logs:
+                self.logger.error("array length  " + str(cred_list_length) + ": " + str(cred_list))
 
     def prepare_credentials(self, email, password):
         """ insert credentials in database
@@ -142,6 +160,7 @@ class BreachCompilation(DBHandler):
                 provider = divide_email[1]
                 self.insert_breach_db(email, password, username, provider)
         else:
-            self.logger.error("got wrong format of email: {}".format(str(divide_email)))
+            if self.error_logs:
+                self.logger.error("got wrong format of email: {}".format(str(divide_email)))
 
 

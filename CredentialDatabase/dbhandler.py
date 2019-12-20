@@ -151,7 +151,8 @@ class DBHandler:
                     pass
         else:
             # password to short
-            self.logger.error("password to short for this database structure: {}".format(password))
+            #self.logger.error("password to short for this database structure: {}".format(password))
+            pass
 
     def insert_breach_db(self, email, password, username, provider):
         """ inserts data from the breachcompilation collection into the database
@@ -208,4 +209,5 @@ class DBHandler:
                     # save data which are not inserted
                     self.logger.error(e)
         else:
-            self.logger.error("email to short for this database structure: {}".format(email))
+            #self.logger.error("email to short for this database structure: {}".format(email))
+            pass
