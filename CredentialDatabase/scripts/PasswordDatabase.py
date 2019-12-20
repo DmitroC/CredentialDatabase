@@ -19,7 +19,7 @@ class PasswordDatabase:
 
         self.dbparams = dbparams
 
-    def run(self, path, breach=False):
+    def run(self, path, breach=False, proc=None):
         """ runs the password database script
 
         """
@@ -30,7 +30,7 @@ class PasswordDatabase:
         else:
             import time
             start = time.time()
-            credfile = CredentialFile(filepath=path, password_db=True, num_proc=10, **self.dbparams)
+            credfile = CredentialFile(filepath=path, password_db=True, num_proc=proc, **self.dbparams)
             credfile.create_schemas_and_tables()
             credfile.start_line_iteration()
             end = time.time()
@@ -43,8 +43,9 @@ def main():
     # arguments
     parser = argparse.ArgumentParser(description="script to insert passwords in a database. \nUsage: PasswordDatabase "
                                                  "--host 192.168.1.2 --port 5432 --user john -password test1234 "
-                                                 "--dbname postgres --breachpath /tmp/BreachCompilation (--filepath /path/to/file)")
-    # db parameters
+                                                 "--dbname postgres --breachpath /tmp/BreachCompilation (--filepath /path/to/file) "
+                                                 "--proc 10")
+    # database parameters
     parser.add_argument('--host',       type=str, help='hostname to connect to the database')
     parser.add_argument('--port',       type=str, help='port to connect to the database')
     parser.add_argument('--user',       type=str, help='user of the database')
@@ -52,14 +53,16 @@ def main():
     parser.add_argument('--dbname',     type=str, help='database name')
     # breach compilation path
     parser.add_argument('--breachpath', type=str, help='path to the BreachCompilation collection folder')
-    # password file
-    parser.add_argument('--filepath', type=str, help='path to the password file')
+    # password file path
+    parser.add_argument('--filepath',   type=str, help='path to the password file')
+    # number of processes
+    parser.add_argument('--proc',       type=int, help='number of processes')
 
     args = parser.parse_args()
 
     if (args.host and args.port and args.user and args.password and args.dbname) is None:
         print("Wrong number of arguments. Use it like: PasswordDatabase --host 192.168.1.2 --port 5432 --user "
-              "john --password test1234 --dbname credentials --breachpath /path/to/BreachCompilation (--filepath /path/to/file)")
+              "john --password test1234 --dbname credentials --breachpath /path/to/BreachCompilation (--filepath /path/to/file) --proc 10")
         exit(1)
     else:
         host = args.host
@@ -81,10 +84,11 @@ def main():
 
         elif (args.filepath is not None) and (args.breachpath is None):
             filepath = args.filepath
-            passworddb.run(path=filepath, breach=False)
+            proc = args.proc
+            passworddb.run(path=filepath, breach=False, proc=proc)
 
         else:
-            print("please use either --breachpath or --filepath")
+            print("please use either --breachpath or --filepath argument")
             exit(1)
 
         print("finished script PasswordDatabase")

@@ -1,3 +1,4 @@
+import math
 import logging
 from itertools import islice
 from multiprocessing import Process
@@ -8,7 +9,7 @@ class CredentialFile(DBHandler):
     """ class CredentialFile to extract credentials from given file and insert into the database
 
     USAGE:
-            credentialfile = CredentialFile(filepath=/tmp/example.txt, password_db=True, **dbparams)
+            credentialfile = CredentialFile(filepath=/tmp/example.txt, password_db=True, num_proc=10, **dbparams)
 
     """
 
@@ -20,14 +21,17 @@ class CredentialFile(DBHandler):
         super().__init__(password_db=password_db, db_entries_logger=1000, **dbparams)
 
         self.filepath = filepath
-        self.num_proc = num_proc
+        if num_proc is None:
+            self.num_proc = 10
+        else:
+            self.num_proc = num_proc
 
     def calc_lines_per_process(self, num_lines):
         """ calculates the number of lines for each process
 
         :return:
         """
-        return round(num_lines / self.num_proc)
+        return math.ceil(num_lines / self.num_proc)
 
     def start_line_iteration(self):
         """ starts the line iteration
@@ -35,7 +39,7 @@ class CredentialFile(DBHandler):
         """
         num_lines = self.get_lines_from_file()
         end = 0
-        self.logger.info("start iteration with {} number of lines".format(num_lines))
+        self.logger.info("file contains {} number of lines".format(num_lines))
 
         # calc lines per process
         lines_per_process = self.calc_lines_per_process(num_lines)
