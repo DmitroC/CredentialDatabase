@@ -44,8 +44,8 @@ def main():
     # arguments
     parser = argparse.ArgumentParser(description="script to insert passwords in a database. \nUsage: PasswordDatabase "
                                                  "--host 192.168.1.2 --port 5432 --user john -password test1234 "
-                                                 "--dbname postgres --breachpath /tmp/BreachCompilation (--filepath /path/to/file) "
-                                                 "--proc 10")
+                                                 "--dbname postgres --breachpath /tmp/BreachCompilation (--filepath /path/to/credentialfile "
+                                                 "--proc 10)")
     # database parameters
     parser.add_argument('--host',       type=str, help='hostname to connect to the database')
     parser.add_argument('--port',       type=str, help='port to connect to the database')
@@ -55,7 +55,7 @@ def main():
     # breach compilation path
     parser.add_argument('--breachpath', type=str, help='path to the BreachCompilation collection folder')
     # password file path
-    parser.add_argument('--filepath',   type=str, help='path to the password file')
+    parser.add_argument('--filepath',   type=str, help='path to the credential file')
     # number of processes
     parser.add_argument('--proc',       type=int, help='number of processes')
 
@@ -63,7 +63,8 @@ def main():
 
     if (args.host and args.port and args.user and args.password and args.dbname) is None:
         print("Wrong number of arguments. Use it like: PasswordDatabase --host 192.168.1.2 --port 5432 --user "
-              "john --password test1234 --dbname credentials --breachpath /path/to/BreachCompilation (--filepath /path/to/file) --proc 10")
+              "john --password test1234 --dbname credentials --breachpath /path/to/BreachCompilation (--filepath /path/to/credentialfile "
+              "--proc 10)")
         exit(1)
     else:
         host = args.host
