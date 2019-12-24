@@ -15,7 +15,8 @@ setup(
     name="CredentialDatabase",
     version=__version__,
     description="creates a massive credential database",
-    long_description=readme + "\n\n" + changelog,
+    long_description=readme,
+    long_description_content_type='text/markdown',
     license=__license__,
     author=__author__,
     author_email=__email__,
@@ -27,11 +28,12 @@ setup(
     package_data={'CredentialDatabase': ['config/*']},
     install_requires=required,
     keywords=["PasswordDatabase", "BreachCompilation", "credentials", "leaked", "database", "CredentialDatabase"],
+    python_requires=">=3",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Intended Audience :: End Users/Desktop",
-        "License :: OSI Approved :: MIT",
+        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
@@ -39,7 +41,7 @@ setup(
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: Implementation :: PyPy",
+        "Programming Language :: Python :: Implementation :: PyPy"
     ],
     entry_points={
         "console_scripts": [
