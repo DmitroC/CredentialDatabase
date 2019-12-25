@@ -28,7 +28,7 @@ from password files
 <br>
 
 ## Installation
-installation with pip 
+install [CredentialDatabase](https://github.com/bierschi/CredentialDatabase) with pip 
 <pre><code>
 pip3 install CredentialDatabase
 </code></pre>
@@ -36,21 +36,6 @@ pip3 install CredentialDatabase
 or from source
 <pre><code>
 sudo python3 setup.py install
-</code></pre>
-
-or create a wheel for installing the package with pip
-<pre><code>
-sudo python3 setup.py bdist_wheel
-</code></pre>
-
-install the package with pip
-<pre><code>
-pip3 install CredentialDatabase-1.0.0-py3-none-any.whl
-</code></pre>
-
-uninstall the package with pip 
-<pre><code>
-pip3 uninstall CredentialDatabase
 </code></pre>
 
 ### Usage and Examples
