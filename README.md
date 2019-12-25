@@ -28,8 +28,12 @@ from password files
 <br>
 
 ## Installation
+installation with pip 
+<pre><code>
+pip3 install CredentialDatabase
+</code></pre>
 
-installation from source
+or from source
 <pre><code>
 sudo python3 setup.py install
 </code></pre>
@@ -84,7 +88,7 @@ PasswordDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 
 </code></pre>
 or with `--filepath`
 <pre><code>
-PasswordDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname passwords --filepath /path/to/CredentialFile
+PasswordDatabase --host 192.168.1.2 --port 5432 --user john --password test1234 --dbname passwords --filepath /path/to/CredentialFile --proc 10
 </code></pre>
 
 insert subsequent command to run the script completely in background
