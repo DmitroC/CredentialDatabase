@@ -15,6 +15,7 @@ from password files
 (file size: ~42GB) <br>
 
 
+
 ## Content 
 
 - [Installation](https://github.com/bierschi/CredentialDatabase#installation)
