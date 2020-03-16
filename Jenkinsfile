@@ -52,10 +52,12 @@ pipeline {
                     }
                 }
                 stage('Deploy to PyPI') {
-                    when { branch "release/*" }
-
+                    when {
+                        expression { "${env.GIT_BRANCH}" =~ "origin/release/" }
+                        }
                     steps {
-                        echo 'Deploy Package CredentialDatabase to Python Package Index'
+                        echo 'Deploy to PyPI'
+                        sh "python3 -m twine upload dist/*"
                     }
                 }
     }
